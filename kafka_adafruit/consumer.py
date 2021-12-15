@@ -1,13 +1,13 @@
 
 from pyspark.sql import SparkSession
-
+from utils import *
 
 spark= SparkSession.builder.master("local").getOrCreate()
 
 df = spark \
   .readStream \
   .format("kafka") \
-  .option("kafka.bootstrap.servers", "10.28.8.136:9092") \
-  .option("subscribe", "topic1") \
+  .option("kafka.bootstrap.servers", BOOTSTRAP_SERVER) \
+  .option("subscribe", TOPIC_KAFKA) \
   .load()
 df.selectExpr("CAST(value AS STRING)")
