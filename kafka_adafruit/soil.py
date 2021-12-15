@@ -1,12 +1,10 @@
 from typing import Dict
-import requests
 import random 
 import time 
 from threading import Thread
+from Adafruit_IO import MQTTClient
+from utils import *
  
- 
-from server import *
-
  
 soil = 50
 up = False
@@ -14,8 +12,8 @@ irrigation_time = 0 # seconds
 update_time = 1
 alpha = 500
 beta = 0.1
-SLEEP=5
-def get_message(client, topic_id, payload:Dict):
+SLEEP=180
+def get_message(client, topic_id, payload,group):
     global irrigation_time,up
     if "motor" in payload.keys():
         
@@ -25,8 +23,14 @@ def get_message(client, topic_id, payload:Dict):
         print(irrigation_time)
  
   
+def connected(client, group_name):
+    print('Listening for changes on ', group_name)
+    client.subscribe_group(group_name)
 
-
+def disconnected(client):
+    # Disconnected function will be called when the client disconnects.
+    print('Disconnected from Adafruit IO!')
+    sys.exit(1)
 
 
 
@@ -72,11 +76,11 @@ def send(client):
     while True:
         if soil <0:
             soil=0
-        client.publish("soil",soil,group_name)
+        client.publish("soil",soil,GROUP_NAMES[0])
         time.sleep(SLEEP)
         
 
-client = MQTTClient(ADAFRUIT_IO_USERNAME, ADAFRUIT_IO_KEY)
+client = MQTTClient(ADAFRUIT_IO_USERNAME, ADAFRUIT_IO_KEY, group=GROUP_NAMES[0])
 client.on_connect    = connected
 client.on_disconnect = disconnected
 client.on_message    = get_message
