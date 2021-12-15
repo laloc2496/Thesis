@@ -2,7 +2,7 @@
 from pyspark.sql import SparkSession
 from utils import *
 
-spark= SparkSession.builder.master(SPARK_MASTER).getOrCreate()
+spark= SparkSession.builder.master("local").getOrCreate()
 
 df = spark \
   .readStream \
