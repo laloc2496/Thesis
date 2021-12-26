@@ -10,5 +10,5 @@ MOTOR='motor'
 SOIL='soil'
 TEMPERATURE='temperature'
 HUMIDITY='humidity'
-
+DATETIME_FORMAT="%H:%M:%S %d-%m-%Y"
 FEEDS=['light','motor','soil','temperature','humidity']

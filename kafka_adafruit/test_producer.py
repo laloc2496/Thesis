@@ -6,6 +6,7 @@ def to_json(object: Object):
     return json.dumps(object.__dict__)
 producer = KafkaProducer(bootstrap_servers=BOOTSTRAP_SERVER)
 def send_message(message, topic=TOPIC_KAFKA):
+    print(to_json(message))
     producer.send(TOPIC_KAFKA, to_json(message).encode('utf-8'))
 
 
