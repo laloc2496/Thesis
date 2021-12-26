@@ -1,3 +1,5 @@
+from pyspark.sql.types import *
+
 class Object:
     def __init__(self,id,humidity=None,light=None,soil=None,temperature=None):
         self.id=id
@@ -14,3 +16,12 @@ class Object:
         self.light=None 
         self.soil=None
         self.temperature=None
+
+    @staticmethod
+    def prototype_structed_streaming():
+        jsonschema = StructType().add("id", StringType()) \
+                        .add("humidity", FloatType()) \
+                        .add("light", FloatType()) \
+                        .add("soil", FloatType()) \
+                        .add("temperature", FloatType())
+        return jsonschema
