@@ -18,6 +18,7 @@ class Object:
         self.light=None 
         self.soil=None
         self.temperature=None
+        self.time=str(dt.now().strftime(DATETIME_FORMAT))
 
     @staticmethod
     def prototype_structed_streaming():
