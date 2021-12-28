@@ -36,7 +36,7 @@ def write_data(df,batchID):
     id=df.first()[0]
     df=df.drop("id")
     url=f"/user/root/data/{id}/"
-    df.coalesce(1).write.mode("append").partitionBy(PARTITION).option("header",'true').csv('/user/root/test/')
+    df.coalesce(1).write.mode("append").partitionBy(PARTITION).option("header",'true').csv(url)
 data.writeStream.foreachBatch(write_data).start().awaitTermination()
 
 spark.stop()
