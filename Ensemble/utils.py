@@ -9,9 +9,9 @@ SPARK_MASTER = "local[*]"
 TRACKING_URI = "fold40"
 
 
-df = pd.read_csv("/home/binh/data/data_sonar_test.csv")
+# df = pd.read_csv("/home/binh/data/data_sonar_test.csv")
 
-FEATURES = list(df.columns[1:-2])
+# FEATURES = list(df.columns[1:-2])
 
 
 def listToString(lst):
@@ -22,7 +22,7 @@ def cross_validation(name, model, data):
     for fold in data:
         temp_model = model.fit(fold[0])
         validation = temp_model.transform(fold[1]).select(
-            ["features", convert_predict_col_name(name)])
+            ["features", get_predict_col_name(name)])
         predict = predict.union(validation) if predict else validation
     return predict
     
@@ -85,7 +85,7 @@ def vector_assembler(input_col, data=None, output_col="features"):
         return vectorAssembler
 
 
-def convert_predict_col_name(model_name):
+def get_predict_col_name(model_name):
     return "prediction_"+model_name
 
 
