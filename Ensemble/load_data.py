@@ -12,7 +12,6 @@ import pandas as pd
 
 def get_train_data(spark,uri):
     df=pd.read_csv(uri)
-    df=df.iloc[:,1:]
     df= spark.createDataFrame(df)
     return df
 
