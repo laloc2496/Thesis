@@ -13,11 +13,8 @@ TRACKING_URI = "fold40"
 
 # FEATURES = list(df.columns[1:-2])
 
-
 def listToString(lst):
     return " ".join(str(elem) for elem in lst)
-
-
 
 def cross_validation(name, model, data):
     predict = None
@@ -27,7 +24,7 @@ def cross_validation(name, model, data):
             ["features", get_predict_col_name(name)])
         predict = predict.union(validation) if predict else validation
     return predict
-    
+
 def parse_uri(uri, flavor):
 
     uri = f'runs:/{uri}/model'
@@ -35,7 +32,6 @@ def parse_uri(uri, flavor):
         return mlflow.sklearn.load_model(uri)
     elif flavor == "spark":
         return mlflow.spark.load_model(uri)
-
 
 def _already_ran(entry_point_name, parameters, experiment_id=None):
     # experiment_id = experiment_id if experiment_id is not None else _get_experiment_id()
@@ -89,6 +85,17 @@ def vector_assembler(input_col, data=None, output_col="features"):
 
 def get_predict_col_name(model_name):
     return "prediction_"+model_name
+
+
+def save_model(model, model_name, features, accuracy=None):
+    #    mlflow.set_tracking_uri(TRACKING_URI)
+    mlflow.set_experiment(experiment_name=model_name)
+    with mlflow.start_run():
+        mlflow.log_param("name", model_name)
+        mlflow.log_param("features", listToString(features))
+        mlflow.spark.log_model(model, "model")
+        if accuracy:
+            mlflow.log_metric("Accuracy", accuracy)
 
 
 def rand(seed=None):
