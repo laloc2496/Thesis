@@ -1,0 +1,17 @@
+name: ensemble_learning
+
+conda_env: conda.yaml
+
+entry_points:
+  SVM:
+    command: "spark-submit svm.py"
+  DecisionTree:
+    command: "spark-submit decision_tree.py"
+  Bayes:
+    command: "spark-submit bayes.py"
+  MetaModel:
+    command: "spark-submit meta_model.py"
+  main:
+    parameters:
+      maxIter: {type: int, default: 5}
+    command: "spark-submit main.py {maxIter}"
