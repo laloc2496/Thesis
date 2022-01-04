@@ -6,7 +6,7 @@ from mlflow.tracking.fluent import _get_experiment_id
 from pyspark.ml.feature import VectorAssembler
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 SPARK_MASTER = "local[*]"
-TRACKING_URI = "fold40"
+#TRACKING_URI = "fold40"
 
 
 # df = pd.read_csv("/home/binh/data/data_sonar_test.csv")
@@ -90,13 +90,15 @@ def get_predict_col_name(model_name):
 def save_model(model, model_name, features, accuracy=None):
     #    mlflow.set_tracking_uri(TRACKING_URI)
     mlflow.set_experiment(experiment_name=model_name)
-    with mlflow.start_run():
+    run_id=None
+    with mlflow.start_run() as run:
+        run_id = run.info.run_id
         mlflow.log_param("name", model_name)
         mlflow.log_param("features", listToString(features))
         mlflow.spark.log_model(model, "model")
         if accuracy:
             mlflow.log_metric("Accuracy", accuracy)
-
+    return run_id
 
 def rand(seed=None):
 

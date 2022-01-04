@@ -5,10 +5,25 @@ from pyspark.ml.classification import LogisticRegression, DecisionTreeClassifier
 from pyspark.ml import Pipeline, feature
 from utils import *
 from load_data import *
-
+from mlflow.tracking import MlflowClient
+from mlflow.utils import mlflow_tags
+from mlflow.tracking.fluent import _get_experiment_id
 # TODO
 # [ ]lam 1 cai auto get feature cho base model
 # [ ] fix load_base_model to auto load latest base model
+
+
+class BaseModel(Pipeline):
+    def __init__(self, features, *, stages=...) -> None:
+        self.features = features
+        super().__init__(stages=stages)
+
+    def fit(self, dataset, params=None):
+        return None
+
+    def transform(self, dataset, params=None):
+        dataset = vector_assembler(self.features, dataset)
+        return predict_base_model(dataset, self.features)
 
 
 def get_model():
@@ -58,8 +73,8 @@ def train_base_model(features, data):
         model = models[name]
         pipeline = Pipeline().setStages([model])
         model = pipeline.fit(data)
-        result[name] = model
-        save_model(model, name, features)
+        run_id = save_model(model, name, features)
+        result[name] = {"model": model, "id": run_id}
         print(f"Train {name} model finish !")
     return result
 
@@ -67,9 +82,9 @@ def train_base_model(features, data):
 def load_base_model():
     models = dict()
     models['DecisionTree'] = parse_uri(
-        'dc748e3640fb4c45a9678ff40aa9edc0', 'spark')
-    models['SVM'] = parse_uri('31c23398c62e44a598e23c9291d3c570', 'spark')
-    models['Bayes'] = parse_uri('7bd3e88ae3424a969cdb73ec22c5289f', 'spark')
+        'cee4828b091149dead6e6866ac144ca3', 'spark')
+    models['SVM'] = parse_uri('1fc478ce683245218c2c6fd944d68b41', 'spark')
+    models['Bayes'] = parse_uri('bc09954b9ee74505a05b8e92baed7549', 'spark')
     return models
 
 
@@ -100,5 +115,9 @@ FEATURES = ['humidity', 'light']
 # model=meta_model(features, data)
 # save_model(model,"lr",features)
 
-# train_base_model(features=FEATURES,data=df)
-predict_base_model(df, FEATURES).show()
+lst = train_base_model(features=FEATURES, data=df)
+for key in lst:
+    print(key)
+    print(lst[key]['id'])
+    print()
+#predict_base_model(df, FEATURES).show()
