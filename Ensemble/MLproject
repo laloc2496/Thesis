@@ -3,8 +3,14 @@ name: ensemble_learning
 conda_env: conda.yaml
 
 entry_points:
-  base_model:
-    command: "spark-submit meta_model.py"
+  stacking_train:
+    parameters:
+      dataset: {type: str}
+    command: "spark-submit EnsembleStacking.py -t {dataset}"
+  stacking_prediction:
+    parameters:
+      dataset: {type: str}
+    command: "spark-submit EnsembleStacking.py -p {dataset}"
   main:
     parameters:
       maxIter: {type: int, default: 5}

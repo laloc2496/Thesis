@@ -52,6 +52,7 @@ def _already_ran(entry_point_name, parameters, experiment_id=None):
         return "f9cc6d6b71ed480683ac37d50db226af"
     # return None
 
+ 
 
 def get_or_run(entrypoint, parameters=None):
     experiment_name = entrypoint
@@ -89,9 +90,9 @@ def get_predict_col_name(model_name):
 
 def save_model(model, model_name, features, accuracy=None):
     #    mlflow.set_tracking_uri(TRACKING_URI)
-    mlflow.set_experiment(experiment_name=model_name)
+    #    mlflow.set_experiment(experiment_name=model_name)
     run_id=None
-    with mlflow.start_run() as run:
+    with mlflow.start_run(run_name=model_name) as run:
         run_id = run.info.run_id
         mlflow.log_param("name", model_name)
         mlflow.log_param("features", listToString(features))

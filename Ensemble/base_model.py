@@ -1,13 +1,13 @@
 import pandas as pd
 from pyspark.sql import SparkSession
-from pyspark.ml.classification import LogisticRegression, DecisionTreeClassifier, LinearSVC, NaiveBayes, OneVsRest
+from pyspark.ml.classification import  DecisionTreeClassifier, LinearSVC, NaiveBayes, OneVsRest
 
 from pyspark.ml import Pipeline
 from utils import *
 from load_data import *
 from mlflow.tracking import MlflowClient
-from mlflow.utils import mlflow_tags
 from mlflow.tracking.fluent import _get_experiment_id
+
 # TODO
 # [ ]lam 1 cai auto get feature cho base model
 # [ ] fix load_base_model to auto load latest base model
@@ -81,18 +81,37 @@ def train_base_model(features, data):
         print(f"Train {name} model finish !")
     return result
 
+def get_base_model(experiment_id=None):
+    client = MlflowClient()
+    experiment_id = experiment_id if experiment_id is not None else _get_experiment_id()
+    all_run_infos = client.list_run_infos(experiment_id)
+    latest_run = all_run_infos[0]
+    bases_model = dict()
+    for run_info in all_run_infos:
+        full_run = client.get_run(run_info.run_id)
+        params = full_run.data.params
+        if params['name'] == 'meta_model':
+            nums_model = int(params['NumModel'])
 
-def load_base_model():
-    models = dict()
-    models['DecisionTree'] = parse_uri(
-        'cee4828b091149dead6e6866ac144ca3', 'spark')
-    models['SVM'] = parse_uri('1fc478ce683245218c2c6fd944d68b41', 'spark')
-    models['Bayes'] = parse_uri('bc09954b9ee74505a05b8e92baed7549', 'spark')
-    return models
+            features = params['features'].split(' ')
+            features = features[:-nums_model]
+            for key in params:
+                if key.find('uri_') != -1:
+                    bases_model[key[4:]] = parse_uri(params[key], 'spark')
+            break
+    return bases_model, features
+
+# def load_base_model():
+#     models = dict()
+#     models['DecisionTree'] = parse_uri(
+#         'cee4828b091149dead6e6866ac144ca3', 'spark')
+#     models['SVM'] = parse_uri('1fc478ce683245218c2c6fd944d68b41', 'spark')
+#     models['Bayes'] = parse_uri('bc09954b9ee74505a05b8e92baed7549', 'spark')
+#     return models
 
 
-def predict_base_model(data, features):
-    models = load_base_model()
+def predict_base_model(data):
+    models,features = get_base_model()
     predict_cols = list()
     data = vector_assembler(features, data)
     for name in models:
