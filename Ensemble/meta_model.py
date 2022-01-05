@@ -7,7 +7,7 @@ from load_data import *
 
 
 def train_meta_model(features, data):
-    model = LogisticRegression
+    model = LogisticRegression()
     vector = vector_assembler(features)
     print(features)
     lr = LogisticRegression().setFeaturesCol("features").setLabelCol("label")

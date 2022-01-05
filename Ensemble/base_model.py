@@ -2,7 +2,7 @@ import pandas as pd
 from pyspark.sql import SparkSession
 from pyspark.ml.classification import LogisticRegression, DecisionTreeClassifier, LinearSVC, NaiveBayes, OneVsRest
 
-from pyspark.ml import Pipeline, feature
+from pyspark.ml import Pipeline
 from utils import *
 from load_data import *
 from mlflow.tracking import MlflowClient
@@ -52,8 +52,9 @@ def stacking(features, data, fold=5):
     data = vector_assembler(features, data)
     data_train = kFold(data, nFolds=fold)
     predict_cols = list()
-
+    print('Start cross validation !')
     for name in models:
+        print(f'Validation for {name} model')
         validation_set = cross_validation(name, models[name], data_train)
         data = data.join(validation_set, "features", "left")
         predict_name = get_predict_col_name(name)
@@ -61,6 +62,7 @@ def stacking(features, data, fold=5):
 
     data = data.drop("features")
     features.extend(predict_cols)
+    print('Cross validation finish')
     return {"data": data, "features": features}
 
 
@@ -68,6 +70,7 @@ def train_base_model(features, data):
     models = get_model()
     result = dict()
     data = vector_assembler(features, data)
+    print('Train base models')
     for name in models:
         print(f'Start train {name} model')
         model = models[name]
@@ -115,9 +118,11 @@ FEATURES = ['humidity', 'light']
 # model=meta_model(features, data)
 # save_model(model,"lr",features)
 
-lst = train_base_model(features=FEATURES, data=df)
-for key in lst:
-    print(key)
-    print(lst[key]['id'])
-    print()
-#predict_base_model(df, FEATURES).show()
+# lst = train_base_model(features=FEATURES, data=df)
+# for key in lst:
+#     print(key)
+#     print(lst[key]['id'])
+#     print()
+# #predict_base_model(df, FEATURES).show()
+
+ 
