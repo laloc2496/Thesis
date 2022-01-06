@@ -6,11 +6,13 @@ entry_points:
   stacking_train:
     parameters:
       dataset: {type: str}
-    command: "spark-submit EnsembleStacking.py -t {dataset}"
+      features: {type: str}
+    command: "spark-submit EnsembleStacking.py -t {dataset} -f features"
   stacking_prediction:
     parameters:
       dataset: {type: str}
-    command: "spark-submit EnsembleStacking.py -p {dataset}"
+      features: {type: str}
+    command: "spark-submit EnsembleStacking.py -p {dataset} -f features"
   main:
     parameters:
       maxIter: {type: int, default: 5}

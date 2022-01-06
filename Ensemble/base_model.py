@@ -7,25 +7,7 @@ from utils import *
 from load_data import *
 from mlflow.tracking import MlflowClient
 from mlflow.tracking.fluent import _get_experiment_id
-
-# TODO
-# [ ]lam 1 cai auto get feature cho base model
-# [ ] fix load_base_model to auto load latest base model
-
-
-class BaseModel(Pipeline):
-    def __init__(self, features, *, stages=...) -> None:
-        self.features = features
-        super().__init__(stages=stages)
-
-    def fit(self, dataset, params=None):
-        return None
-
-    def transform(self, dataset, params=None):
-        dataset = vector_assembler(self.features, dataset)
-        return predict_base_model(dataset, self.features)
-
-
+ 
 def get_model():
     models = dict()
     dt = DecisionTreeClassifier(predictionCol="prediction_DecisionTree")\
@@ -124,24 +106,9 @@ def predict_base_model(data):
     return data
 
 
-spark = SparkSession.builder.master("local").getOrCreate()
-uri = "/home/binh/Thesis/Ensemble/data/sample_data_test.csv"
-df = get_train_data(spark, uri)
-FEATURES = ['humidity', 'light']
-
-
-# stack = stacking(FEATURES, df)
-# data = stack['data']
-# data.show()
-# features = stack['features']
-# model=meta_model(features, data)
-# save_model(model,"lr",features)
-
-# lst = train_base_model(features=FEATURES, data=df)
-# for key in lst:
-#     print(key)
-#     print(lst[key]['id'])
-#     print()
-# #predict_base_model(df, FEATURES).show()
+# spark = SparkSession.builder.master("local").getOrCreate()
+# uri = "/home/binh/Thesis/Ensemble/data/sample_data_test.csv"
+# df = get_train_data(spark, uri)
+# FEATURES = ['humidity', 'light']
 
  

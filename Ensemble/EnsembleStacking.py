@@ -3,13 +3,12 @@ from pyspark.ml.classification import LogisticRegression
 from pyspark.ml import Pipeline, Transformer, feature
 from load_data import get_train_data
 from utils import *
-from meta_model import train_meta_model
 from base_model import stacking, predict_base_model, train_base_model
 from pyspark.sql import SparkSession
 from mlflow.tracking import MlflowClient
 from mlflow.tracking.fluent import _get_experiment_id
 
-
+import argparse
 class EnsembleStacking():
     def __init__(self) -> None:
         self.features_lv1 = None
@@ -69,21 +68,18 @@ def get_meta_model(experiment_id=None):
             return parse_uri(full_run.info.run_id, 'spark')
 
 
-
-
-
 def transform(dataset):
     data = predict_base_model(dataset)
-    meta_model=get_meta_model()
-    result=meta_model.transform(data).show()
+    meta_model = get_meta_model()
+    result = meta_model.transform(data).show()
     return result
 
 
-spark = SparkSession.builder.master("local").getOrCreate()
-uri = "/home/binh/Thesis/Ensemble/data/sample_data_test.csv"
-df = get_train_data(spark, uri)
+# spark = SparkSession.builder.master("local").getOrCreate()
+# uri = "/home/binh/Thesis/Ensemble/data/sample_data_test.csv"
+# df = get_train_data(spark, uri)
 
-transform(df)
+# transform(df)
 # FEATURES = ['humidity', 'light']
 # # model= EnsembleStacking(FEATURES)
 # # model=model.fit(df)
@@ -102,3 +98,23 @@ transform(df)
 
 
 #model= parse_uri('08c8fcec2b0c47a39ae44a3592ff6522','spark')
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='This script used to train and predict model for iggration')
+    parser.add_argument("--train","-t", type=str)
+    parser.add_argument("--predict","-p",type=str)
+    parser.add_argument('--features','-f',nargs="+")
+    args= parser.parse_args()
+    uri_data_train= args.train
+    uri_data_predict= args.predict
+    features= args.features
+    if uri_data_train:
+        spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
+        print(uri_data_train)
+        print(features)
+        #uri = "/home/binh/Thesis/Ensemble/data/sample_data_test.csv"
+        df = get_train_data(spark, uri_data_train)
+        ensemble_stacking=EnsembleStacking()
+        ensemble_stacking=ensemble_stacking.fit(df,features)
+        ensemble_stacking.save()
+
