@@ -115,6 +115,6 @@ if __name__ == "__main__":
         #uri = "/home/binh/Thesis/Ensemble/data/sample_data_test.csv"
         df = get_train_data(spark, uri_data_train)
         ensemble_stacking=EnsembleStacking()
-        ensemble_stacking=ensemble_stacking.fit(df,features)
+        ensemble_stacking.fit(df,features)
         ensemble_stacking.save()
 
