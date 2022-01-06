@@ -1,0 +1,24 @@
+name: ensemble_learning
+
+conda_env: conda.yaml
+
+entry_points:
+  send_time_irrigation:
+    parameters:
+      feed_id: {type: str}
+      value: {type: int}
+    command: "python3 kafka_adafruit/motor.py --id {feed_id} --value {value}"
+  stacking_train:
+    parameters:
+      dataset: {type: str}
+      features: {type: str}
+    command: "spark-submit ensemble_model/EnsembleStacking.py -t {dataset} -f features"
+  stacking_prediction:
+    parameters:
+      dataset: {type: str}
+      features: {type: str}
+    command: "spark-submit ensemble_model/EnsembleStacking.py -p {dataset} -f features"
+  main:
+    parameters:
+      maxIter: {type: int, default: 5}
+    command: "spark-submit main.py {maxIter}"

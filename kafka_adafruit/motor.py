@@ -4,7 +4,7 @@ import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description='This script used to send request igrigation')
+        description='This script used to send request irrigation')
     parser.add_argument("--id", type=str)
     parser.add_argument("--value", type=int)
     args = parser.parse_args()
