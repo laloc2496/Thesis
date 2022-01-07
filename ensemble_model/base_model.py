@@ -72,15 +72,16 @@ def get_base_model(experiment_id=None):
     for run_info in all_run_infos:
         full_run = client.get_run(run_info.run_id)
         params = full_run.data.params
-        if params['name'] == 'meta_model':
-            nums_model = int(params['NumModel'])
+        if 'name' in params:
+            if params['name'] == 'meta_model':
+                nums_model = int(params['NumModel'])
 
-            features = params['features'].split(' ')
-            features = features[:-nums_model]
-            for key in params:
-                if key.find('uri_') != -1:
-                    bases_model[key[4:]] = parse_uri(params[key], 'spark')
-            break
+                features = params['features'].split(' ')
+                features = features[:-nums_model]
+                for key in params:
+                    if key.find('uri_') != -1:
+                        bases_model[key[4:]] = parse_uri(params[key], 'spark')
+                break
     return bases_model, features
 
 # def load_base_model():

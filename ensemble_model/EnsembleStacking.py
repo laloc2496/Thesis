@@ -47,6 +47,7 @@ class EnsembleStacking():
             for key in self.base_models:
                 mlflow.log_param('uri_'+key, self.base_models[key]['id'])
             mlflow.spark.log_model(self.meta_model, "model")
+        
         return run_id
 
 # class EnsembleStacking(Transformer):
@@ -67,8 +68,9 @@ def get_meta_model(experiment_id=None):
     for run_info in all_run_infos:
         full_run = client.get_run(run_info.run_id)
         params = full_run.data.params
-        if params['name'] == 'meta_model':
-            return parse_uri(full_run.info.run_id, 'spark')
+        if 'name' in params:
+            if params['name'] == 'meta_model':
+                return parse_uri(full_run.info.run_id, 'spark')
 
 
 def transform(dataset):
@@ -84,43 +86,45 @@ def current_partition(date=None):
     current_date = dt.now().strftime("%H-%d-%B-%Y")
     return 'partition='+current_date
 
-FEATURES = ['humidity', 'light']
-spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
-uri_data_train = "/home/binh/Thesis/ensemble_model/data/sample_data_test.csv"
-df = get_train_data(spark, uri_data_train)
-ensemble_stacking = EnsembleStacking()
-ensemble_stacking.fit(df, FEATURES)
-ensemble_stacking.save()
-# if __name__ == "__main__":
-#     parser = argparse.ArgumentParser(
-#         description='This script used to train and predict model for irrigation')
-#     parser.add_argument("--train", "-t", type=str)
-#     parser.add_argument("--predict", "-p", default=False)
-#     parser.add_argument('--features', '-f', nargs="+")
-#     parser.add_argument('--feed', type=str)
-#     args = parser.parse_args()
-#     uri_data_train = args.train
-#     uri_data_predict = args.predict
-#     features = args.features
-#     spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
-#     if uri_data_train:
-#         uri_data_train = "/home/binh/Thesis/ensemble_model/data/sample_data_test.csv"
-#         df = get_train_data(spark, uri_data_train)
-#         ensemble_stacking = EnsembleStacking()
-#         ensemble_stacking.fit(df, features)
-#         ensemble_stacking.save()
-#     elif uri_data_predict:
-#         feed_id = args.feed
-#         path = f'data/{feed_id}/'+current_partition()
-#         df = spark.read.csv(path, header=True).orderBy("time",ascending=False).limit(1)
-#         df=df.select(features)
-#         for feature in features:
-#             df=df.withColumn(feature,col(feature).cast(FloatType()))
-#         result=transform(df)
-#         result.show()
-#         #stacking 
-#         result=result.collect()[0]
-#         run_checkpoint(uri='.',entry_point='send_time_irrigation',use_conda=False,parameters={'feed_id':'sensors','value':int(result['prediction'])})
+# FEATURES = ['humidity', 'light']
+# spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
+# uri_data_train = "/home/binh/Thesis/ensemble_model/data/sample_data_test.csv"
+# df = get_train_data(spark, uri_data_train)
+# ensemble_stacking = EnsembleStacking()
+# ensemble_stacking.fit(df, FEATURES)
+# ensemble_stacking.save()
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description='This script used to train and predict model for irrigation')
+    parser.add_argument("--train", "-t", type=str)
+    parser.add_argument("--predict", "-p", default=False)
+    parser.add_argument('--features', '-f', nargs="+")
+    parser.add_argument('--feed', type=str)
+    args = parser.parse_args()
+    uri_data_train = args.train
+    uri_data_predict = args.predict
+    features = args.features
+    spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
+    if uri_data_train:
+        uri_data_train = "/home/binh/Thesis/ensemble_model/data/sample_data_test.csv"
+        df = get_train_data(spark, uri_data_train)
+        ensemble_stacking = EnsembleStacking()
+        ensemble_stacking.fit(df, features)
+        ensemble_stacking.save()
+        print("Finish")
+    elif uri_data_predict:
+        feed_id = args.feed
+        path = f'data/{feed_id}/'+current_partition()
+        df = spark.read.csv(path, header=True).orderBy("time",ascending=False).limit(1)
+        df=df.select(features)
+        for feature in features:
+            df=df.withColumn(feature,col(feature).cast(FloatType()))
+        result=transform(df)
+        result.show()
+        #stacking 
+        result=result.collect()[0]
+        print('hi')
+        run_checkpoint(uri='.',entry_point='send_time_irrigation',use_conda=False,parameters={'feed_id':'sensors','value':int(result['prediction'])})
 
 
 
