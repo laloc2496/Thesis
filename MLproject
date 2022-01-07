@@ -17,7 +17,7 @@ entry_points:
     parameters:
       dataset: {type: str}
       features: {type: str}
-    command: "spark-submit ensemble_model/EnsembleStacking.py -p {dataset} -f features"
+    command: "python3 ensemble_model/EnsembleStacking.py -p {dataset} -f features"
   main:
     parameters:
       maxIter: {type: int, default: 5}

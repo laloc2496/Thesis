@@ -1,6 +1,7 @@
 
+from datetime import datetime as dt
 from pyspark.ml.classification import LogisticRegression
-from pyspark.ml import Pipeline, Transformer, feature
+from pyspark.ml import Pipeline, Transformer
 from load_data import get_train_data
 from utils import *
 from base_model import stacking, predict_base_model, train_base_model
@@ -9,6 +10,8 @@ from mlflow.tracking import MlflowClient
 from mlflow.tracking.fluent import _get_experiment_id
 from mlflow import run as run_checkpoint
 import argparse
+from pyspark.sql.types import FloatType
+from pyspark.sql.functions import col
 class EnsembleStacking():
     def __init__(self) -> None:
         self.features_lv1 = None
@@ -71,51 +74,58 @@ def get_meta_model(experiment_id=None):
 def transform(dataset):
     data = predict_base_model(dataset)
     meta_model = get_meta_model()
-    result = meta_model.transform(data).show()
+    result = meta_model.transform(data)
     return result
 
 
-# spark = SparkSession.builder.master("local").getOrCreate()
-# uri = "/home/binh/Thesis/Ensemble/data/sample_data_test.csv"
-# df = get_train_data(spark, uri)
+def current_partition(date=None):
+    if date:
+        return 'partition='+date
+    current_date = dt.now().strftime("%H-%d-%B-%Y")
+    return 'partition='+current_date
 
-# transform(df)
-# FEATURES = ['humidity', 'light']
-# # model= EnsembleStacking(FEATURES)
-# # model=model.fit(df)
-# # save_model(model,'lr',FEATURES)
+FEATURES = ['humidity', 'light']
+spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
+uri_data_train = "/home/binh/Thesis/ensemble_model/data/sample_data_test.csv"
+df = get_train_data(spark, uri_data_train)
+ensemble_stacking = EnsembleStacking()
+ensemble_stacking.fit(df, FEATURES)
+ensemble_stacking.save()
+# if __name__ == "__main__":
+#     parser = argparse.ArgumentParser(
+#         description='This script used to train and predict model for irrigation')
+#     parser.add_argument("--train", "-t", type=str)
+#     parser.add_argument("--predict", "-p", default=False)
+#     parser.add_argument('--features', '-f', nargs="+")
+#     parser.add_argument('--feed', type=str)
+#     args = parser.parse_args()
+#     uri_data_train = args.train
+#     uri_data_predict = args.predict
+#     features = args.features
+#     spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
+#     if uri_data_train:
+#         uri_data_train = "/home/binh/Thesis/ensemble_model/data/sample_data_test.csv"
+#         df = get_train_data(spark, uri_data_train)
+#         ensemble_stacking = EnsembleStacking()
+#         ensemble_stacking.fit(df, features)
+#         ensemble_stacking.save()
+#     elif uri_data_predict:
+#         feed_id = args.feed
+#         path = f'data/{feed_id}/'+current_partition()
+#         df = spark.read.csv(path, header=True).orderBy("time",ascending=False).limit(1)
+#         df=df.select(features)
+#         for feature in features:
+#             df=df.withColumn(feature,col(feature).cast(FloatType()))
+#         result=transform(df)
+#         result.show()
+#         #stacking 
+#         result=result.collect()[0]
+#         run_checkpoint(uri='.',entry_point='send_time_irrigation',use_conda=False,parameters={'feed_id':'sensors','value':int(result['prediction'])})
 
 
-# # stack = stacking(FEATURES, df, fold=5)
-# # data_lv2 = stack['data']
-# # new_features = stack['features']
 
 
-# meta_model= EnsembleStacking()
+#FEATURES = ['humidity', 'light']
 
-# meta_model.fit(df,FEATURES)
-# meta_model.save()
-
-
-#model= parse_uri('08c8fcec2b0c47a39ae44a3592ff6522','spark')
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='This script used to train and predict model for irrigation')
-    parser.add_argument("--train","-t", type=str)
-    parser.add_argument("--predict","-p",type=str)
-    parser.add_argument('--features','-f',nargs="+")
-    args= parser.parse_args()
-    uri_data_train= args.train
-    uri_data_predict= args.predict
-    features= args.features
-    if uri_data_train:
-        spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
-        print(uri_data_train)
-        print(features)
-        #uri = "/home/binh/Thesis/Ensemble/data/sample_data_test.csv"
-        df = get_train_data(spark, uri_data_train)
-        ensemble_stacking=EnsembleStacking()
-        ensemble_stacking.fit(df,features)
-        ensemble_stacking.save()
-    elif uri_data_predict:
-        run_checkpoint(uri='.',entry_point='send_time_irrigation',use_conda=False,parameters={'feed_id':'sensors','value':65})
+#python3 EnsembleStacking.py --predict True --feed sensors --features humidity light  >>log.txt
+#python3 EnsembleStacking.py --train 123 --features humidity light >> log.txt
