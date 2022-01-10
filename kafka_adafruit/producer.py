@@ -41,10 +41,12 @@ def message(client, topic_id, payload, group):
     if TEMPERATURE in payload.keys():
         DICT_GROUP_DATA[group].temperature = float(payload[TEMPERATURE])
     if DICT_GROUP_DATA[group].check():
-        send_message(DICT_GROUP_DATA[group])
-        DICT_GROUP_DATA[group].reset()
-
-
+        if HPC==False:
+            send_message(DICT_GROUP_DATA[group])
+            DICT_GROUP_DATA[group].reset()
+        else:
+            send_message_to_HPC(DICT_GROUP_DATA[group])
+            DICT_GROUP_DATA[group].reset()
 def connection_to_feed(group_name) -> MQTTClient:
     client = MQTTClient(ADAFRUIT_IO_USERNAME,
                         ADAFRUIT_IO_KEY, group=group_name)
@@ -55,11 +57,44 @@ def connection_to_feed(group_name) -> MQTTClient:
     return client
 
 
+import requests
+def send_message_to_HPC(message):
+    # url= "http://hpcc.hcmut.edu.vn:10027/data/push"
+    TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyX2FhNjVlMTVmLThkMWEtNGJiZC04Zjc3LTk1NGMzM2NiNTZlOCIsImlhdCI6MTY0MTgzMjc5MX0.nKVLaGS6X6n-zLCebeCavQeNIAp05TFtdB5ak-cINps"
+    user_id="user_aa65e15f-8d1a-4bbd-8f77-954c33cb56e8"
+    NAME="binh"
+    message=to_json(message)
+    print("Send request")
+    url = "http://hpcc.hcmut.edu.vn:10027/data/push"
+    payload = json.dumps({
+    "data":  message})
+    headers = {
+    'Authorization': TOKEN,
+    'Content-Type': 'application/json'
+    }
+    response = requests.request("POST", url, headers=headers, data=payload)
+    print(response.text)
 
+#topic: topic1
+"""
+format input:
+{
+    "id": str,                  REQUIRED
+    "humidity": float,          REQUIRED
+    "soil": float,              REQUIRED
+    "light: float,              REQUIRED
+    "temperature": float        REQUIRED
+}
+
+"""
+HPC=True
 if __name__ == "__main__":
+    
+
     DICT_GROUP_DATA = dict()
     for name in GROUP_NAMES:
         DICT_GROUP_DATA[name] = Object(id=name)
     producer = KafkaProducer(bootstrap_servers=BOOTSTRAP_SERVER)
     connection_to_feed(GROUP_NAMES[0]).loop_blocking()
     producer.close()
+    
