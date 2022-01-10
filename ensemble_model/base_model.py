@@ -64,7 +64,7 @@ def train_base_model(features, data):
     return result
 
 def get_base_model(experiment_id=None):
-    client = MlflowClient()
+    client = MlflowClient(tracking_uri=TRACKING_URI)
     experiment_id = experiment_id if experiment_id is not None else _get_experiment_id()
     all_run_infos = client.list_run_infos(experiment_id)
     latest_run = all_run_infos[0]

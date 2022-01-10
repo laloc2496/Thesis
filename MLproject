@@ -15,9 +15,9 @@ entry_points:
     command: "spark-submit ensemble_model/EnsembleStacking.py -t {dataset} -f features"
   stacking_prediction:
     parameters:
-      dataset: {type: str}
-      features: {type: str}
-    command: "python3 ensemble_model/EnsembleStacking.py -p {dataset} -f features"
+      path: {type: str}
+      feed: {type: str}
+    command: "python3 ensemble_model/EnsembleStacking.py -p {path} --id {feed} -f  humidity light"
   main:
     parameters:
       maxIter: {type: int, default: 5}

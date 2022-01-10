@@ -1,0 +1,15 @@
+artifact_uri: file:///home/binh/Thesis/mlruns/0/786f457ab784433cbae07458c4597a60/artifacts
+end_time: 1641831773985
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: 786f457ab784433cbae07458c4597a60
+run_uuid: 786f457ab784433cbae07458c4597a60
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1641831772573
+status: 3
+tags: []
+user_id: root

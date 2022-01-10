@@ -6,12 +6,15 @@ from load_data import get_train_data
 from utils import *
 from base_model import stacking, predict_base_model, train_base_model
 from pyspark.sql import SparkSession
+import mlflow
 from mlflow.tracking import MlflowClient
 from mlflow.tracking.fluent import _get_experiment_id
 from mlflow import run as run_checkpoint
 import argparse
 from pyspark.sql.types import FloatType
 from pyspark.sql.functions import col
+
+
 class EnsembleStacking():
     def __init__(self) -> None:
         self.features_lv1 = None
@@ -47,7 +50,7 @@ class EnsembleStacking():
             for key in self.base_models:
                 mlflow.log_param('uri_'+key, self.base_models[key]['id'])
             mlflow.spark.log_model(self.meta_model, "model")
-        
+
         return run_id
 
 # class EnsembleStacking(Transformer):
@@ -60,7 +63,7 @@ class EnsembleStacking():
 
 
 def get_meta_model(experiment_id=None):
-    client = MlflowClient()
+    client = MlflowClient(tracking_uri=TRACKING_URI)
     experiment_id = experiment_id if experiment_id is not None else _get_experiment_id()
     all_run_infos = client.list_run_infos(experiment_id)
     latest_run = all_run_infos[0]
@@ -86,6 +89,7 @@ def current_partition(date=None):
     current_date = dt.now().strftime("%H-%d-%B-%Y")
     return 'partition='+current_date
 
+
 # FEATURES = ['humidity', 'light']
 # spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
 # uri_data_train = "/home/binh/Thesis/ensemble_model/data/sample_data_test.csv"
@@ -94,18 +98,20 @@ def current_partition(date=None):
 # ensemble_stacking.fit(df, FEATURES)
 # ensemble_stacking.save()
 if __name__ == "__main__":
+    mlflow.set_tracking_uri(TRACKING_URI)
     parser = argparse.ArgumentParser(
         description='This script used to train and predict model for irrigation')
     parser.add_argument("--train", "-t", type=str)
-    parser.add_argument("--predict", "-p", default=False)
+    parser.add_argument("--path", "-p", default=False)
     parser.add_argument('--features', '-f', nargs="+")
-    parser.add_argument('--feed', type=str)
+    parser.add_argument('--id', type=str)
     args = parser.parse_args()
     uri_data_train = args.train
-    uri_data_predict = args.predict
+    uri_data_predict = args.path
     features = args.features
     spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
     if uri_data_train:
+        # train
         uri_data_train = "/home/binh/Thesis/ensemble_model/data/sample_data_test.csv"
         df = get_train_data(spark, uri_data_train)
         ensemble_stacking = EnsembleStacking()
@@ -113,23 +119,25 @@ if __name__ == "__main__":
         ensemble_stacking.save()
         print("Finish")
     elif uri_data_predict:
-        feed_id = args.feed
-        path = f'data/{feed_id}/'+current_partition()
-        df = spark.read.csv(path, header=True).orderBy("time",ascending=False).limit(1)
-        df=df.select(features)
+        # predict
+        feed_id = args.id
+        #path = f'data/{feed_id}/'+current_partition()
+        path = uri_data_predict
+        df = spark.read.csv(path, header=True).orderBy(
+            "time", ascending=False).limit(1)
+        df = df.select(features)
         for feature in features:
-            df=df.withColumn(feature,col(feature).cast(FloatType()))
-        result=transform(df)
+            df = df.withColumn(feature, col(feature).cast(FloatType()))
+        result = transform(df)
         result.show()
-        #stacking 
-        result=result.collect()[0]
-        print('hi')
-        run_checkpoint(uri='.',entry_point='send_time_irrigation',use_conda=False,parameters={'feed_id':'sensors','value':int(result['prediction'])})
-
-
+        # stacking
+        result = result.collect()[0]
+        # send time irrigation
+        run_checkpoint(uri='.', entry_point='send_time_irrigation', use_conda=False, parameters={
+                       'feed_id': 'sensors', 'value': int(result['prediction'])})
 
 
 #FEATURES = ['humidity', 'light']
 
-#python3 EnsembleStacking.py --predict True --feed sensors --features humidity light  >>log.txt
-#python3 EnsembleStacking.py --train 123 --features humidity light >> log.txt
+# python3 EnsembleStacking.py --predict True --feed sensors --features humidity light  >>log.txt
+# python3 EnsembleStacking.py --train 123 --features humidity light >> log.txt
