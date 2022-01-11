@@ -11,7 +11,7 @@ import time
 
 DELAY = 120
 feeds = ['sensors']
-THRESHOLD = 100
+THRESHOLD = 40
 FEATURES = ['humidity', 'light']
 
 
@@ -28,11 +28,11 @@ if __name__ == "__main__":
     spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
     while True:
         for feed_id in feeds:
-            path = "data/sensors/partition=13-28-December-2021"
+            #path = "data/sensors/partition=13-28-December-2021"
 
             # Unnote this row below to get real time data 
             # (MAKE SURE producer and consumer run before)
-            # path=f'data/{feed_id}/'+current_partition()
+            path=f'data/{feed_id}/'+current_partition()
             df = spark.read.csv(path, header=True).orderBy(
                 "time", ascending=False).limit(1)
             df = df.select(['soil'])
