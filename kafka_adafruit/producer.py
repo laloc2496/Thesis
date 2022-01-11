@@ -59,7 +59,7 @@ def connection_to_feed(group_name) -> MQTTClient:
 
 import requests
 def send_message_to_HPC(message):
-    # url= "http://hpcc.hcmut.edu.vn:10027/data/push"
+    # IP 10.1.8 can not send request
     TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyX2FhNjVlMTVmLThkMWEtNGJiZC04Zjc3LTk1NGMzM2NiNTZlOCIsImlhdCI6MTY0MTgzMjc5MX0.nKVLaGS6X6n-zLCebeCavQeNIAp05TFtdB5ak-cINps"
     user_id="user_aa65e15f-8d1a-4bbd-8f77-954c33cb56e8"
     NAME="binh"

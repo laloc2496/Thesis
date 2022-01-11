@@ -9,7 +9,7 @@ import time
 
 # Get latest data by time interval to check wheather Irgriration ?
 
-DELAY = 60
+DELAY = 120
 feeds = ['sensors']
 THRESHOLD = 100
 FEATURES = ['humidity', 'light']

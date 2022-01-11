@@ -11,4 +11,4 @@ if __name__ == "__main__":
     feed_id = args.id
     value = int(args.value)
     client = connection_to_feed('sensor')
-    client.publish('motor', value, feed_id)
+    client.publish('motor', value*100, feed_id)
