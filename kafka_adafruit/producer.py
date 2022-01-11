@@ -33,7 +33,8 @@ def disconnected(client):
 
 def message(client, topic_id, payload, group):
     if LIGHT in payload.keys():
-        DICT_GROUP_DATA[group].light = round(float(payload[LIGHT]), 1)
+        light= round(float(payload[LIGHT]), 1) if float(payload[LIGHT]> 1 else 0.001
+        DICT_GROUP_DATA[group].light = light
     if HUMIDITY in payload.keys():
         DICT_GROUP_DATA[group].humidity = float(payload[HUMIDITY])
     if SOIL in payload.keys():
@@ -89,8 +90,6 @@ format input:
 """
 HPC=True
 if __name__ == "__main__":
-    
-
     DICT_GROUP_DATA = dict()
     for name in GROUP_NAMES:
         DICT_GROUP_DATA[name] = Object(id=name)
