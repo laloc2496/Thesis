@@ -26,7 +26,7 @@ class EnsembleStacking():
     def fit(self, dataset, features):
         self.features_lv1 = features
         self.base_models = train_base_model(features, dataset)
-        stack = stacking(features, df, fold=5)
+        stack = stacking(features, dataset, fold=5)
         data_lv2 = stack['data']
         self.features_lv2 = stack['features']
         model = LogisticRegression()
@@ -50,7 +50,6 @@ class EnsembleStacking():
             for key in self.base_models:
                 mlflow.log_param('uri_'+key, self.base_models[key]['id'])
             mlflow.spark.log_model(self.meta_model, "model")
-
         return run_id
 
 # class EnsembleStacking(Transformer):
@@ -112,8 +111,11 @@ if __name__ == "__main__":
     spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
     if uri_data_train:
         # train
-        uri_data_train = "/home/binh/Thesis/ensemble_model/data/sample_data_test.csv"
-        df = get_train_data(spark, uri_data_train)
+        #uri_data_train = "/home/binh/Thesis/ensemble_model/data/sample_data_test.csv"
+        try:
+            df = get_train_data(spark, uri_data_train)
+        except:
+            print("Can not load data !")
         ensemble_stacking = EnsembleStacking()
         ensemble_stacking.fit(df, features)
         ensemble_stacking.save()
@@ -139,5 +141,5 @@ if __name__ == "__main__":
 
 #FEATURES = ['humidity', 'light']
 
-# python3 EnsembleStacking.py --predict True --feed sensors --features humidity light  >>log.txt
+# python3 EnsembleStacking.py -p data/sensors/partition=13-28-December-2021 --id sensors -f humidity light  >>log.txt
 # python3 EnsembleStacking.py --train 123 --features humidity light >> log.txt
