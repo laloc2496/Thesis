@@ -5,11 +5,11 @@ import mlflow
 from mlflow.tracking.fluent import _get_experiment_id
 from pyspark.ml.feature import VectorAssembler
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
-#SPARK_MASTER = "spark://10.1.8.7:7077"
-SPARK_MASTER = "local[*]"
+SPARK_MASTER = "spark://10.1.8.7:7077"
+#SPARK_MASTER = "local[*]"
 #suy nghi cho may con worker truy cap dc vao BACK_END_URI
 TRACKING_URI = "http://10.1.8.7:5000"
-TRACKING_URI=None
+#TRACKING_URI=None
 
 # df = pd.read_csv("/home/binh/data/data_sonar_test.csv")
 

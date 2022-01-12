@@ -40,7 +40,7 @@ class EnsembleStacking():
         return model
 
     def save(self):
-        #    mlflow.set_tracking_uri(TRACKING_URI)
+        mlflow.set_tracking_uri(TRACKING_URI)
         run_id = None
         with mlflow.start_run(run_name=self.model_name) as run:
             run_id = run.info.run_id
@@ -108,9 +108,10 @@ if __name__ == "__main__":
     uri_data_train = args.train
     uri_data_predict = args.path
     features = args.features
-    spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
+    
     if uri_data_train:
         # train
+        spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
         #uri_data_train = "/home/binh/Thesis/ensemble_model/data/sample_data_test.csv"
         try:
             df = get_train_data(spark, uri_data_train)
@@ -122,6 +123,8 @@ if __name__ == "__main__":
         print("Finish")
     elif uri_data_predict:
         # predict
+        mlflow.set_tracking_uri(TRACKING_URI)
+        spark = SparkSession.builder.master("local").getOrCreate()
         feed_id = args.id
         #path = f'data/{feed_id}/'+current_partition()
         path = uri_data_predict
