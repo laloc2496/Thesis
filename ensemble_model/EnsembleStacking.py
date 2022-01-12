@@ -145,4 +145,4 @@ if __name__ == "__main__":
 #FEATURES = ['humidity', 'light']
 
 # python3 EnsembleStacking.py -p data/sensors/partition=13-28-December-2021 --id sensors -f humidity light  >>log.txt
-# python3 EnsembleStacking.py --train 123 --features humidity light >> log.txt
+# spark-submit EnsembleStacking.py -t /home/binh/Thesis/ensemble_model/data/sample_data_test.csv -f humidity light >> log.txt
