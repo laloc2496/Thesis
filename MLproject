@@ -10,9 +10,9 @@ entry_points:
     command: "python3 kafka_adafruit/motor.py --id {feed_id} --value {value}"
   stacking_train:
     parameters:
-      dataset: {type: str}
-      features: {type: str}
-    command: "spark-submit ensemble_model/EnsembleStacking.py -t {dataset} -f features"
+      path: {type: str}
+      feed: {type: str}
+    command: "spark-submit ensemble_model/EnsembleStacking.py -t {path} --id {feed}  -f humidity light"
   stacking_prediction:
     parameters:
       path: {type: str}
