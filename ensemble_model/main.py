@@ -32,9 +32,12 @@ if __name__ == "__main__":
 
             # Unnote this row below to get real time data 
             # (MAKE SURE producer and consumer run before)
-            path=f'data/{feed_id}/'+current_partition()
-            df = spark.read.csv(path, header=True).orderBy(
-                "time", ascending=False).limit(1)
+            try:
+                path=f'data/{feed_id}/'+current_partition()
+                df = spark.read.csv(path, header=True).orderBy(
+                    "time", ascending=False).limit(1)
+            except:
+                continue
             df = df.select(['soil'])
             soil = float(df.collect()[0]['soil'])
             if soil < THRESHOLD:
@@ -47,5 +50,7 @@ if __name__ == "__main__":
 
                 run_checkpoint(uri=".", entry_point="stacking_prediction",
                                use_conda=False, parameters=parameters)
+            else:
+                print("No irrgation !")
         print('Wait...')
         time.sleep(DELAY)
