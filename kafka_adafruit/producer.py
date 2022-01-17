@@ -68,7 +68,7 @@ def send_message_to_HPC(message):
     print("Send request")
     url = "http://hpcc.hcmut.edu.vn:10027/data/push"
     payload = json.dumps({
-    "data":  message})
+    "data":   json.loads(message)})
     headers = {
     'Authorization': TOKEN,
     'Content-Type': 'application/json'
