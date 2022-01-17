@@ -57,7 +57,6 @@ def connection_to_feed(group_name) -> MQTTClient:
     client.connect()
     return client
 
-
 import requests
 def send_message_to_HPC(message):
     # IP 10.1.8 can not send request

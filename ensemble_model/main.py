@@ -11,7 +11,7 @@ import time
 
 DELAY = 120
 feeds = ['sensors']
-THRESHOLD = 100
+THRESHOLD = 100 # dieu chinh trong ngay ( tao csv danh gia theo gio)
 FEATURES = ['humidity', 'light']
 
 
