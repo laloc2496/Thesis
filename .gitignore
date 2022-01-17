@@ -3,3 +3,5 @@ ensemble_model/log.txt
 ensemble_model/__p
 ensemble_model/__pycache__/*
 fairscheduler-statedump.log
+ensemble_model/log.txt
+

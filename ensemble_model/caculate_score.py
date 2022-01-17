@@ -18,6 +18,18 @@ def caculate_score(name, dataset, metric, predict_col, label):
     print('-'*10)
 # fc2bfcac9fd645b5b6077402ee4869ad
 
+# SVM
+# 0.9999921952521973
+# ----------
+# Bayes
+# 0.9999924519873225
+# ----------
+# DT
+# 0.9999975866898242
+# ----------
+# meta
+# 0.9999957381969236
+# ----------
 
 def caculate_all_model(dataset,predict_cols,label='label',metric='accuracy', create_spark=False):
     # predict_cols: (name, preidict_col)

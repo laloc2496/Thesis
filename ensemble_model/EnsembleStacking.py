@@ -22,11 +22,12 @@ class EnsembleStacking():
         self.base_models = dict()
         self.meta_model = None
         self.model_name = 'meta_model'
+        self.fold= 40
 
     def fit(self, dataset, features):
         self.features_lv1 = features
         self.base_models = train_base_model(features, dataset)
-        stack = stacking(features, dataset, fold=5)
+        stack = stacking(features, dataset, fold=self.fold)
         data_lv2 = stack['data']
         self.features_lv2 = stack['features']
         model = LogisticRegression()
@@ -50,6 +51,7 @@ class EnsembleStacking():
             for key in self.base_models:
                 mlflow.log_param('uri_'+key, self.base_models[key]['id'])
             mlflow.spark.log_model(self.meta_model, "model")
+            mlflow.log_param("fold",self.fold)
         return run_id
 
 # class EnsembleStacking(Transformer):
