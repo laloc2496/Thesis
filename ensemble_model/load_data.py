@@ -6,18 +6,23 @@ from sklearn.model_selection import train_test_split
 # le.fit(df.Class)
 # df['label'] = le.transform(df.Class)
 
-df =pd.read_csv("data/data_new.csv")
-train, test=train_test_split(df,test_size=0.3)
+# df =pd.read_csv("data/data_new.csv")
+# train, test=train_test_split(df,test_size=0.3)
 
-train.to_csv("data/data_train.csv")
-test.to_csv("data/data_test.csv")
+# train.to_csv("data/data_train.csv")
+# test.to_csv("data/data_test.csv")
 
 def get_train_data(spark,uri):
     df=pd.read_csv(uri)
     df= spark.createDataFrame(df)
     return df
 
-def get_test_data(spark,uri):
+def get_test_data(spark,uri,test=False):
+    if test:
+        df=pd.read_csv(uri)
+        df=df.head(5)
+        df= spark.createDataFrame(df)
+        return df
     df=pd.read_csv(uri)
     df= spark.createDataFrame(df)
     return df

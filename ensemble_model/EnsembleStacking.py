@@ -72,6 +72,7 @@ def get_meta_model(experiment_id=None):
         params = full_run.data.params
         if 'name' in params:
             if params['name'] == 'meta_model':
+                print(f"Run_id: {full_run.info.run_id}")
                 return parse_uri(full_run.info.run_id, 'spark')
 
 
