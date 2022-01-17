@@ -12,12 +12,12 @@ entry_points:
     parameters:
       path: {type: str}
       feed: {type: str}
-    command: "spark-submit ensemble_model/EnsembleStacking.py -t {path} --id {feed}  -f humidity light"
+    command: "spark-submit ensemble_model/EnsembleStacking.py -t {path} --id {feed}  -f humidity light temperature"
   stacking_prediction:
     parameters:
       path: {type: str}
       feed: {type: str}
-    command: "python3 ensemble_model/EnsembleStacking.py -p {path} --id {feed} -f  humidity light"
+    command: "python3 ensemble_model/EnsembleStacking.py -p {path} --id {feed} -f  humidity light temperature"
   main:
     parameters:
       maxIter: {type: int, default: 5}

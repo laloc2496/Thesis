@@ -41,13 +41,13 @@ if __name__ == "__main__":
             df = df.select(['soil'])
             soil = float(df.collect()[0]['soil'])
             if soil < THRESHOLD:
-                print("Send request")
+                print("Send request irrigation")
                 parameters = {"path": path,
                               "feed": feed_id
                               }
                 # Run code to predict time to irrigation and send time irrigation to motor.
                 # Check result in: https://io.adafruit.com/quangbinh/feeds/sensors.motor
-
+                
                 run_checkpoint(uri=".", entry_point="stacking_prediction",
                                use_conda=False, parameters=parameters)
             else:

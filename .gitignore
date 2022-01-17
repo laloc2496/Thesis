@@ -5,3 +5,4 @@ ensemble_model/__pycache__/*
 fairscheduler-statedump.log
 ensemble_model/log.txt
 
+mlruns/*

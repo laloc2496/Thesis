@@ -126,7 +126,6 @@ if __name__ == "__main__":
         print("Finish")
     elif uri_data_predict:
         # predict
-        mlflow.set_tracking_uri(TRACKING_URI)
         spark = SparkSession.builder.master("local").getOrCreate()
         feed_id = args.id
         #path = f'data/{feed_id}/'+current_partition()
