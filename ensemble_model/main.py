@@ -1,15 +1,15 @@
 
 from EnsembleStacking import current_partition
 from pyspark.sql import SparkSession
-from utils import SPARK_MASTER
+from utils import SPARK_MASTER, TRACKING_URI
 from pyspark.sql.types import FloatType
 from pyspark.sql.functions import col
 from mlflow import run as run_checkpoint
 import time
-
+import mlflow
 # Get latest data by time interval to check wheather Irgriration ?
 
-DELAY = 120
+DELAY = 60*5
 feeds = ['sensors']
 THRESHOLD = 100 # dieu chinh trong ngay ( tao csv danh gia theo gio)
 FEATURES = ['humidity', 'light']
@@ -25,6 +25,7 @@ def list2String(s):
 
 
 if __name__ == "__main__":
+    mlflow.set_tracking_uri(TRACKING_URI)
     spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
     while True:
         for feed_id in feeds:
