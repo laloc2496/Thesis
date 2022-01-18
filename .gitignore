@@ -6,3 +6,8 @@ fairscheduler-statedump.log
 ensemble_model/log.txt
 
 mlruns/*
+consumer_log.txt
+*.txt
+*.out
+*.log
+*.pyc

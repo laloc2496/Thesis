@@ -99,6 +99,8 @@ def current_partition(date=None):
 # ensemble_stacking = EnsembleStacking()
 # ensemble_stacking.fit(df, FEATURES)
 # ensemble_stacking.save()
+
+ 
 if __name__ == "__main__":
     mlflow.set_tracking_uri(TRACKING_URI)
     parser = argparse.ArgumentParser(
@@ -135,14 +137,18 @@ if __name__ == "__main__":
         df = df.select(features)
         for feature in features:
             df = df.withColumn(feature, col(feature).cast(FloatType()))
+        
         result = transform(df)
-        result.show()
-        # stacking
+        url= '/user/root/data/retrain/'
+        features.append("prediction")
+        df=result.select(features)
         result = result.collect()[0]
-        # send time irrigation
+
         run_checkpoint(uri='.', entry_point='send_time_irrigation', use_conda=False, parameters={
                        'feed_id': 'sensors', 'value': int(result['prediction'])})
 
+        df=df.withColumnRenamed("prediction","label")
+        df.write.mode("append").option("header",'true').csv(url)
 
 #FEATURES = ['humidity', 'light']
 
