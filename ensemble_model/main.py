@@ -9,18 +9,26 @@ import time
 import mlflow
 # Get latest data by time interval to check wheather Irgriration ?
 import subprocess
-DELAY = 60*5
+DELAY = 60*4
 feeds = ['sensors']
-THRESHOLD = 100  # dieu chinh trong ngay ( tao csv danh gia theo gio)
+
 FEATURES = ['humidity', 'light','temperature']
+from datetime import datetime as dt
+TIMELINE=[("6:00","9:59",35),("10:00","16:59",50),("17:00","5:59",65)]
 
-
- 
-
-
+#THRESHOLD=40
 def list2String(s):
     return " ".join(s)
 
+def get_threshhold():
+    for a,b,thresh_hold in TIMELINE[:-1]:
+        a= dt.strptime(a,"%H:%M")
+        b= dt.strptime(b,"%H:%M")
+        now=dt.now().strftime("%H:%M")
+        now=dt.strptime(now,"%H:%M")
+        if now > a and now < b:
+            return thresh_hold
+    return TIMELINE[-1][2]
 
 def get_latest_path(path):
     try:
@@ -51,8 +59,9 @@ def change_previous_prediction(spark: SparkSession):
 FLAG_IRRIGATION = False
 if __name__ == "__main__":
     mlflow.set_tracking_uri(TRACKING_URI)
-    spark = SparkSession.builder.master("local").getOrCreate()
+    spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
     while True:
+        THRESHOLD= get_threshhold()
         for feed_id in feeds:
             #path = "data/sensors/partition=13-28-December-2021"
 
@@ -89,8 +98,9 @@ if __name__ == "__main__":
                 FLAG_IRRIGATION = True
                 run_checkpoint(uri=".", entry_point="stacking_prediction",
                                use_conda=False, parameters=parameters)
+                time.sleep(DELAY*2)
             else:
                 FLAG_IRRIGATION = False
                 print("No irrgation !")
-        print('Wait...')
-        time.sleep(DELAY)
+                print('Wait...')
+                time.sleep(DELAY)

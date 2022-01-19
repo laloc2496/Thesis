@@ -4,7 +4,8 @@ import requests
 import random
 import time
 from threading import Thread
-from server import *
+from utils import *
+from Adafruit_IO import MQTTClient
 import datetime
 
 
@@ -16,8 +17,14 @@ import datetime
 # beta = 0.1
 SLEEP = 5
 
+def connected(client, group_name):
+    print('Listening for changes on ', group_name)
+    client.subscribe_group(group_name)
 
-def get_message(client, topic_id, payload: Dict):
+def disconnected(client):
+    # Disconnected function will be called when the client disconnects.
+    print('Disconnected from Adafruit IO!')
+def get_message(client, topic_id, payload: Dict,group):
     now = datetime.datetime.now()
     if "motor" in payload.keys():
         irrigation_time = int(payload['motor'])
@@ -38,20 +45,24 @@ def get_message(client, topic_id, payload: Dict):
     elif now.hour >= 19 and now.hour < 23:
         soil.rank = 0.7
     elif now.hour >=23 or now.hour <6:
-        soil.rank =0.3
+        soil.rank =0.2
     elif now.hour >= 16 and now.hour < 19:
-        soil.rank = 1.1
+        soil.rank = 1
     else:
         soil.rank = 1.3
 
     if soil.up == False and soil.humidity>=70 and soil.temperature<=28:
-        rain= random.randint(1,10)
-        rain=  rain - ((soil.humidity-70)+ (30- soil.temperature)*2)//10 
-        decision= (30- soil.temperature)*2+ soil.humidity-70
-        if rain<3:
-            soil.up=True
-            soil.irrigation_time=10
-
+        if soil.rank!=0.2:
+            rain= random.randint(1,15)
+            if rain<4:
+                soil.up=True
+                soil.irrigation_time=50*rain
+        else:
+            #ban dem
+            rain= random.randint(1,10)
+            if rain<3:
+                soil.up=True
+                soil.irrigation_time=15
 class Soil:
     def __init__(self, value=50, irrigation_time=0, alpha=500, beta=0.1, sleep=SLEEP):
         self.light = 0
@@ -114,17 +125,20 @@ class Soil:
             if (self.value <0 ): self.value= 0
 
 
-def send(client, soil: Soil):
+def send(client, soil: Soil,group_name):
 
     while True:
-        if soil.value < 0:
-            soil.value = 0
+        if soil.value < 10:
+            soil.value = 10
+        if soil.value>100:
+            soil.value=100
         client.publish("soil", soil.value, group_name)
         time.sleep(SLEEP)
 
 
 if __name__ == "__main__":
-    client = MQTTClient(ADAFRUIT_IO_USERNAME, ADAFRUIT_IO_KEY)
+    group_name='sensors'
+    client = MQTTClient(ADAFRUIT_IO_USERNAME, ADAFRUIT_IO_KEY,group=group_name)
     client.on_connect = connected
     client.on_disconnect = disconnected
     client.on_message = get_message
@@ -134,4 +148,4 @@ if __name__ == "__main__":
     soil = Soil()
     thread2 = Thread(target=soil.downtrend)
     thread2.start()
-    send(client, soil)
+    send(client, soil,group_name)
