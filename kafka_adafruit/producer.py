@@ -71,6 +71,7 @@ def send_message_to_HPC(message):
     print("Send message to HPC")
     url = "http://hpcc.hcmut.edu.vn:10027/data/push"
     payload = json.dumps({
+        "schema":"spark-smart-village",
         "data":   json.loads(message)})
     headers = {
         'Authorization': TOKEN,
