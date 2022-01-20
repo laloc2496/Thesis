@@ -33,16 +33,26 @@ def disconnected(client):
 
 
 def message(client, topic_id, payload, group):
+    # if LIGHT in payload.keys():
+    #     light = round(float(payload[LIGHT]), 1) if float(
+    #         payload[LIGHT]) > 1 else 0.001
+    #     DICT_GROUP_DATA[group].light = light
+    # if HUMIDITY in payload.keys():
+    #     DICT_GROUP_DATA[group].humidity = float(payload[HUMIDITY])
+    # if SOIL in payload.keys():
+    #     DICT_GROUP_DATA[group].soil = round(float(payload[SOIL]), 1)
+    # if TEMPERATURE in payload.keys():
+    #     DICT_GROUP_DATA[group].temperature = float(payload[TEMPERATURE])
+
     if LIGHT in payload.keys():
-        light = round(float(payload[LIGHT]), 1) if float(
-            payload[LIGHT]) > 1 else 0.001
+        light = round(float(payload[LIGHT])) 
         DICT_GROUP_DATA[group].light = light
     if HUMIDITY in payload.keys():
         DICT_GROUP_DATA[group].humidity = float(payload[HUMIDITY])
     if SOIL in payload.keys():
-        DICT_GROUP_DATA[group].soil = round(float(payload[SOIL]), 1)
+        DICT_GROUP_DATA[group].soil = round(float(payload[SOIL]))
     if TEMPERATURE in payload.keys():
-        DICT_GROUP_DATA[group].temperature = float(payload[TEMPERATURE])
+        DICT_GROUP_DATA[group].temperature = round(float(payload[TEMPERATURE]))
     if DICT_GROUP_DATA[group].check():
         if HPC == False:
             send_message(DICT_GROUP_DATA[group])
