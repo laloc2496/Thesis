@@ -45,7 +45,7 @@ def message(client, topic_id, payload, group):
     #     DICT_GROUP_DATA[group].temperature = float(payload[TEMPERATURE])
 
     if LIGHT in payload.keys():
-        light = round(float(payload[LIGHT])) 
+        light = round(float(payload[LIGHT]))
         DICT_GROUP_DATA[group].light = light
     if HUMIDITY in payload.keys():
         DICT_GROUP_DATA[group].humidity = float(payload[HUMIDITY])
@@ -107,13 +107,18 @@ format input:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='This script used to send data to Kafka')
-    parser.add_argument("--hpc", default=False)
+    parser.add_argument("--hpc", '-p', action="store_true", default=False)
     args = parser.parse_args()
-    global HPC 
-    HPC= args.hpc
+    global HPC
+    HPC = args.hpc
+    if HPC:
+        print('Send data to HPC')
+    else:
+        print('Send data to local kafka')
+        producer = KafkaProducer(bootstrap_servers=BOOTSTRAP_SERVER)
     DICT_GROUP_DATA = dict()
     for name in GROUP_NAMES:
         DICT_GROUP_DATA[name] = Object(id=name)
-    producer = KafkaProducer(bootstrap_servers=BOOTSTRAP_SERVER)
+
     connection_to_feed(GROUP_NAMES[0]).loop_blocking()
     producer.close()
