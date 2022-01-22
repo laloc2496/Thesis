@@ -13,16 +13,16 @@ from mlflow import run as run_checkpoint
 import argparse
 from pyspark.sql.types import FloatType
 from pyspark.sql.functions import col
-
+import time
 
 class EnsembleStacking():
-    def __init__(self) -> None:
+    def __init__(self,fold=40) -> None:
         self.features_lv1 = None
         self.features_lv2 = None
         self.base_models = dict()
         self.meta_model = None
         self.model_name = 'meta_model'
-        self.fold= 40
+        self.fold= fold
 
     def fit(self, dataset, features):
         self.features_lv1 = features
@@ -92,21 +92,12 @@ def current_partition(date=None):
     return 'partition='+current_date
 
 
-# FEATURES = ['humidity', 'light']
-# spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
-# uri_data_train = "/home/binh/Thesis/ensemble_model/data/sample_data_test.csv"
-# df = get_train_data(spark, uri_data_train)
-# ensemble_stacking = EnsembleStacking()
-# ensemble_stacking.fit(df, FEATURES)
-# ensemble_stacking.save()
-
- 
 if __name__ == "__main__":
     mlflow.set_tracking_uri(TRACKING_URI)
     parser = argparse.ArgumentParser(
         description='This script used to train and predict model for irrigation')
     parser.add_argument("--train", "-t", type=str)
-    parser.add_argument("--path", "-p", default=False)
+    parser.add_argument("--path", "-p", type=str)
     parser.add_argument('--features', '-f', nargs="+")
     parser.add_argument('--id', type=str)
     args = parser.parse_args()
@@ -116,22 +107,30 @@ if __name__ == "__main__":
     
     if uri_data_train:
         # train
+        start = time.time()
+        FOLD=30
         spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
         #uri_data_train = "/home/binh/Thesis/ensemble_model/data/sample_data_test.csv"
         try:
             df = get_train_data(spark, uri_data_train)
         except:
             print("Can not load data !")
-        ensemble_stacking = EnsembleStacking()
+        ensemble_stacking = EnsembleStacking(fold=FOLD)
         ensemble_stacking.fit(df, features)
         ensemble_stacking.save()
+
+        end = time.time()
         print("Finish")
+        print(f"Runtime of the program with {ensemble_stacking.fold} FOLD is {end - start}")
+        
+        
     elif uri_data_predict:
         # predict
         spark = SparkSession.builder.master("local").getOrCreate()
         feed_id = args.id
         #path = f'data/{feed_id}/'+current_partition()
         path = uri_data_predict
+        print(f'Uri data prediction: {path}')
         df = spark.read.csv(path, header=True).orderBy(
             "time", ascending=False).limit(1)
         df = df.select(features)
@@ -145,7 +144,7 @@ if __name__ == "__main__":
         result = result.collect()[0]
 
         run_checkpoint(uri='.', entry_point='send_time_irrigation', use_conda=False, parameters={
-                       'feed_id': 'sensors', 'value': int(result['prediction'])})
+                       'feed_id': feed_id, 'value': int(result['prediction'])})
 
         df=df.withColumnRenamed("prediction","label")
         df.write.mode("append").option("header",'true').csv(url)

@@ -14,9 +14,9 @@ if __name__ == "__main__":
     feed_id = args.id
     value = int(args.value)
     try:
-        client = connection_to_feed('sensor')
+        client = connection_to_feed(feed_id)
         client.publish('motor', times_irrigation[value]*5, feed_id)
         print("Success !")
     except:
-        print("can not send request")
+        print("Can not send request")
     print('-'*10)
