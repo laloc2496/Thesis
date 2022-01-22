@@ -33,26 +33,18 @@ def disconnected(client):
 
 
 def message(client, topic_id, payload, group):
-    # if LIGHT in payload.keys():
-    #     light = round(float(payload[LIGHT]), 1) if float(
-    #         payload[LIGHT]) > 1 else 0.001
-    #     DICT_GROUP_DATA[group].light = light
-    # if HUMIDITY in payload.keys():
-    #     DICT_GROUP_DATA[group].humidity = float(payload[HUMIDITY])
-    # if SOIL in payload.keys():
-    #     DICT_GROUP_DATA[group].soil = round(float(payload[SOIL]), 1)
-    # if TEMPERATURE in payload.keys():
-    #     DICT_GROUP_DATA[group].temperature = float(payload[TEMPERATURE])
-
     if LIGHT in payload.keys():
-        light = round(float(payload[LIGHT]))
+        light = round(float(payload[LIGHT]), 1) if float(
+            payload[LIGHT]) > 1 else 0.001
         DICT_GROUP_DATA[group].light = light
     if HUMIDITY in payload.keys():
-        DICT_GROUP_DATA[group].humidity = float(payload[HUMIDITY])
+        DICT_GROUP_DATA[group].humidity = round(float(payload[HUMIDITY]),1)
     if SOIL in payload.keys():
-        DICT_GROUP_DATA[group].soil = round(float(payload[SOIL]))
+        DICT_GROUP_DATA[group].soil = round(float(payload[SOIL]), 1)
     if TEMPERATURE in payload.keys():
-        DICT_GROUP_DATA[group].temperature = round(float(payload[TEMPERATURE]))
+        DICT_GROUP_DATA[group].temperature = round(float(payload[TEMPERATURE]),1)
+
+
     if DICT_GROUP_DATA[group].check():
         if HPC == False:
             send_message(DICT_GROUP_DATA[group])
@@ -81,7 +73,6 @@ def send_message_to_HPC(message):
     print("Send message to HPC")
     url = "http://hpcc.hcmut.edu.vn:10027/data/push"
     payload = json.dumps({
-        "schema":"spark-smart-village",
         "data":   json.loads(message)})
     headers = {
         'Authorization': TOKEN,
