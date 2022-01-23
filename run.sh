@@ -1,4 +1,9 @@
 #!/bin/bash
+echo "try to kill old processes"
+
+bash kill.sh
+
+echo "create new processes"
 
 if pgrep -f "kafka_adafruit/producer.py" ; then
     echo "Producer alrealy running.."
