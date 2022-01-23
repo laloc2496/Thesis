@@ -11,3 +11,8 @@ consumer_log.txt
 *.out
 *.log
 *.pyc
+ensemble_model/main_bayes.py
+ensemble_model/main_dt.py
+ensemble_model/main_svm.py
+test.py
+.vscode/settings.json
