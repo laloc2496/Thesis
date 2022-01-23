@@ -1,6 +1,6 @@
 from Adafruit_IO import MQTTClient
 from datetime import datetime as dt
-from utils import ADAFRUIT_IO_KEY, ADAFRUIT_IO_USERNAME
+from utils import get_account
 from csv import writer
 
 FEED_ID = "soil"
@@ -13,7 +13,7 @@ feeds = [LIGHT, MOTOR, SOIL, TEMPERATURE, HUMIDITY]
 TIMELINE = [("6:00", "9:59", 35), ("10:00", "16:59", 50),
             ("17:00", "5:59", 65)]
 
-GROUP_NAMES = ['sensors', 'svm', 'bayes']
+GROUP_NAMES = ['sensors', 'svm', 'bayes','dt']
 
 
 def get_threshhold():
@@ -76,8 +76,9 @@ def message(client, topic_id, payload, group):
 
 
 def connection_to_feed(group_name) -> MQTTClient:
-    client = MQTTClient(ADAFRUIT_IO_USERNAME,
-                        ADAFRUIT_IO_KEY, group=group_name)
+    account = get_account(group_name)
+    client = MQTTClient(account.username,
+                        account.key, group=group_name)
     client.on_connect = connected
     client.on_disconnect = disconnected
     client.on_message = message

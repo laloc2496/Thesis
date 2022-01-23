@@ -55,8 +55,11 @@ def message(client, topic_id, payload, group):
 
 
 def connection_to_feed(group_name) -> MQTTClient:
-    client = MQTTClient(ADAFRUIT_IO_USERNAME,
-                        ADAFRUIT_IO_KEY, group=group_name)
+    account=get_account(group_name)
+    # client = MQTTClient(ADAFRUIT_IO_USERNAME,
+    #                     ADAFRUIT_IO_KEY, group=group_name)
+    client = MQTTClient(account.username,
+                        account.key, group=group_name)
     client.on_connect = connected
     client.on_disconnect = disconnected
     client.on_message = message

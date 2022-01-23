@@ -15,7 +15,7 @@ import datetime
 # update_time = 1
 # alpha = 500
 # beta = 0.1
-SLEEP = 5
+SLEEP = 180
 
 def connected(client, group_name):
     print('Listening for changes on ', group_name)
@@ -137,8 +137,12 @@ def send(client, soil: Soil,group_name):
 
 
 if __name__ == "__main__":
-    group_name='sensors'
-    client = MQTTClient(ADAFRUIT_IO_USERNAME, ADAFRUIT_IO_KEY,group=group_name)
+    group_name='svm'
+    account=get_account(group_name)
+    # client = MQTTClient(ADAFRUIT_IO_USERNAME,
+    #                     ADAFRUIT_IO_KEY, group=group_name)
+    client = MQTTClient(account.username,
+                        account.key, group=group_name)
     client.on_connect = connected
     client.on_disconnect = disconnected
     client.on_message = get_message
