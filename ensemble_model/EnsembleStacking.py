@@ -108,7 +108,7 @@ if __name__ == "__main__":
     if uri_data_train:
         # train
         start = time.time()
-        FOLD=30
+        FOLD=20
         spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
         #uri_data_train = "/home/binh/Thesis/ensemble_model/data/sample_data_test.csv"
         try:
