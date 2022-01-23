@@ -21,7 +21,7 @@ def message(client, topic_id, payload, group):
     print('Topic {0} received new value: {1}'.format(topic_id, payload))
 
 
-group_name = 'svm'
+group_name = 'sensors'
 account = get_account(group_name)
 # client = MQTTClient(ADAFRUIT_IO_USERNAME,
 #                     ADAFRUIT_IO_KEY, group=group_name)

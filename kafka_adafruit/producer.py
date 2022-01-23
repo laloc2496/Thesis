@@ -12,7 +12,8 @@ def to_json(object: Object):
     return json.dumps(object.__dict__)
 
 
-def send_message(message, topic=TOPIC_KAFKA):
+def send_message(message: Object, topic=TOPIC_KAFKA):
+    message_svm = message
     producer.send(TOPIC_KAFKA, to_json(message).encode('utf-8'))
 
 
@@ -37,13 +38,25 @@ def message(client, topic_id, payload, group):
         light = round(float(payload[LIGHT]), 1) if float(
             payload[LIGHT]) > 1 else 0.001
         DICT_GROUP_DATA[group].light = light
+
+        DICT_GROUP_DATA['svm'].light = light
+        DICT_GROUP_DATA['dt'].light = light
+        DICT_GROUP_DATA['bayes'].light = light
     if HUMIDITY in payload.keys():
-        DICT_GROUP_DATA[group].humidity = round(float(payload[HUMIDITY]),1)
+        humidity = round(float(payload[HUMIDITY]), 1)
+        DICT_GROUP_DATA[group].humidity = humidity
+
+        DICT_GROUP_DATA['svm'].humidity = humidity
+        DICT_GROUP_DATA['dt'].humidity = humidity
+        DICT_GROUP_DATA['bayes'].humidity = humidity
     if SOIL in payload.keys():
         DICT_GROUP_DATA[group].soil = round(float(payload[SOIL]), 1)
     if TEMPERATURE in payload.keys():
-        DICT_GROUP_DATA[group].temperature = round(float(payload[TEMPERATURE]),1)
-
+        temperature = round(float(payload[TEMPERATURE]), 1)
+        DICT_GROUP_DATA[group].temperature = temperature
+        DICT_GROUP_DATA['svm'].temperature = temperature
+        DICT_GROUP_DATA['dt'].temperature = temperature
+        DICT_GROUP_DATA['bayes'].temperature = temperature
 
     if DICT_GROUP_DATA[group].check():
         if HPC == False:
@@ -55,7 +68,7 @@ def message(client, topic_id, payload, group):
 
 
 def connection_to_feed(group_name) -> MQTTClient:
-    account=get_account(group_name)
+    account = get_account(group_name)
     # client = MQTTClient(ADAFRUIT_IO_USERNAME,
     #                     ADAFRUIT_IO_KEY, group=group_name)
     client = MQTTClient(account.username,
@@ -99,6 +112,7 @@ format input:
 """
 #HPC = False
 if __name__ == "__main__":
+    GROUP_NAMES = ['sensors', 'svm', 'dt', 'bayes']
     parser = argparse.ArgumentParser(
         description='This script used to send data to Kafka')
     parser.add_argument("--hpc", '-p', action="store_true", default=False)
@@ -113,6 +127,7 @@ if __name__ == "__main__":
     DICT_GROUP_DATA = dict()
     for name in GROUP_NAMES:
         DICT_GROUP_DATA[name] = Object(id=name)
-
-    connection_to_feed(GROUP_NAMES[0]).loop_blocking()
+        connection_to_feed(name).loop_background()
+    while True:
+        pass
     producer.close()

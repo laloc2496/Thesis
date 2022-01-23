@@ -110,3 +110,8 @@ if __name__ == "__main__":
                 print("No irrgation !")
                 print('Wait...')
                 time.sleep(DELAY)
+
+#chay 4 cai main
+#chay 4 cai soil
+#chay producer
+#chay consumer
