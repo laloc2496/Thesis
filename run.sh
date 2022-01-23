@@ -12,6 +12,8 @@ else
     echo "Start producer"
 fi  
 
+
+#consumer------------------
 if pgrep -f "kafka_adafruit/consumer.py" ; then
     echo "Consumer alrealy running.."
 else 
@@ -19,6 +21,40 @@ else
     echo "Start consumer"
 fi  
 
+
+#soil--------------------------------
+if pgrep -f "ensemble_model/soil.py"; then
+    echo "svm alrealy running.."
+else 
+    nohup python3 ensemble_model/soil.py > logs/soil_log.out &
+    echo "Start soil"
+fi
+
+
+if pgrep -f "ensemble_model/soil_bayes.py"; then
+    echo "svm alrealy running.."
+else 
+    nohup python3 ensemble_model/soil_bayes.py > logs/soil_bayes_log.out &
+    echo "Start soil bayes"
+fi
+
+
+if pgrep -f "ensemble_model/soil_dt.py"; then
+    echo "svm alrealy running.."
+else 
+    nohup python3 ensemble_model/soil_dt.py > logs/soil_dt_log.out &
+    echo "Start soil dt"
+fi
+
+
+if pgrep -f "ensemble_model/soil_svm.py"; then
+    echo "svm alrealy running.."
+else 
+    nohup python3 ensemble_model/soil_svm.py > logs/soil_svm_log.out &
+    echo "Start soil svm"
+fi
+
+#main---------------
 
 if pgrep -f "ensemble_model/main.py"; then
     echo "Main alrealy running.."
@@ -51,7 +87,7 @@ else
     echo "Start main bayes"
 fi  
  
-
+#evaluate--------------------
 if pgrep -f "kafka_adafruit/evaluate_model.py"; then
     echo "evaluate alrealy running.."
 else 
