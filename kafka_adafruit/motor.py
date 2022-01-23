@@ -2,7 +2,7 @@
 from producer import connection_to_feed
 import argparse
 from datetime import datetime as dt
-times_irrigation=[60,90,120,150]
+times_irrigation=[60,120,180,240]
 if __name__ == "__main__":
     print('-'*10)
     print(dt.now())
@@ -15,7 +15,7 @@ if __name__ == "__main__":
     value = int(args.value)
     try:
         client = connection_to_feed(feed_id)
-        client.publish('motor', times_irrigation[value]*5, feed_id)
+        client.publish('motor', times_irrigation[value]*3, feed_id)
         print("Success !")
     except:
         print("Can not send request")
