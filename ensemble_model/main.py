@@ -1,4 +1,5 @@
 
+from datetime import datetime as dt
 from EnsembleStacking import current_partition
 from pyspark.sql import SparkSession
 from utils import SPARK_MASTER, TRACKING_URI
@@ -12,23 +13,27 @@ import subprocess
 DELAY = 60*4
 feeds = ['sensors']
 
-FEATURES = ['humidity', 'light','temperature']
-from datetime import datetime as dt
-TIMELINE=[("6:00","9:59",35),("10:00","16:59",50),("17:00","5:59",65)]
+FEATURES = ['humidity', 'light', 'temperature']
+TIMELINE = [("6:00", "9:59", 35), ("10:00", "16:59", 50),
+            ("17:00", "5:59", 65)]
 
-#THRESHOLD=40
+# THRESHOLD=40
+
+
 def list2String(s):
     return " ".join(s)
 
+
 def get_threshhold():
-    for a,b,thresh_hold in TIMELINE[:-1]:
-        a= dt.strptime(a,"%H:%M")
-        b= dt.strptime(b,"%H:%M")
-        now=dt.now().strftime("%H:%M")
-        now=dt.strptime(now,"%H:%M")
+    for a, b, thresh_hold in TIMELINE[:-1]:
+        a = dt.strptime(a, "%H:%M")
+        b = dt.strptime(b, "%H:%M")
+        now = dt.now().strftime("%H:%M")
+        now = dt.strptime(now, "%H:%M")
         if now > a and now < b:
             return thresh_hold
     return TIMELINE[-1][2]
+
 
 def get_latest_path(path):
     try:
@@ -42,6 +47,7 @@ def get_latest_path(path):
                 return path
     except:
         return None
+
 
 def change_previous_prediction(spark: SparkSession):
     folder = '/user/root/data/retrain/'
@@ -61,7 +67,7 @@ if __name__ == "__main__":
     mlflow.set_tracking_uri(TRACKING_URI)
     spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
     while True:
-        THRESHOLD= get_threshhold()
+        THRESHOLD = get_threshhold()
         for feed_id in feeds:
             #path = "data/sensors/partition=13-28-December-2021"
 
@@ -90,9 +96,9 @@ if __name__ == "__main__":
                 parameters = {"path": path,
                               "feed": feed_id
                               }
-                if FLAG_IRRIGATION == True and (THRESHOLD-soil)> 10:
+                if FLAG_IRRIGATION == True and (THRESHOLD-soil) > 10:
                     change_previous_prediction(spark)
-                    
+
                 # Run code to predict time to irrigation and send time irrigation to motor.
                 # Check result in: https://io.adafruit.com/quangbinh/feeds/sensors.motor
                 FLAG_IRRIGATION = True
