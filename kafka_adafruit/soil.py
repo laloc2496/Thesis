@@ -58,17 +58,19 @@ def uptrend():
 def downtrend():
   print("downtrend")
   global soil, alpha , beta
-  rand1 = [random.uniform(-3*beta,3*beta) for x in  range(0, int(random.uniform(alpha,2*alpha)))]
-  rand2 = [random.uniform(-3*beta,5*beta) for x in range(0, int(random.uniform(3*alpha,4*alpha)))]
+  rand1 = [random.uniform(-2*beta,3*beta) for x in  range(0, int(random.uniform(alpha,2*alpha)))]
+  rand2 = [random.uniform(-2*beta,3*beta) for x in range(0, int(random.uniform(3*alpha,4*alpha)))]
   #rand3 = [random.uniform(-0.1,0.1) for x in  range(0, inf)]
   for x in rand1+rand2:
     if up: uptrend()    
     change(x)
-    if soil<20: 
+    if soil<30: 
       break
+    time.sleep(10)
   while(soil>=0):
     if up: uptrend()
-    change(random.uniform(-0.5 * beta,beta))
+    change(random.uniform(-1*beta,2*beta))
+    time.sleep(10)
     if (soil <0 ): soil= 0
 
 def send(client):

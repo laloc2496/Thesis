@@ -64,12 +64,12 @@ def message(client, topic_id, payload, group):
     if SOIL in payload.keys():
         soil = round(float(payload[SOIL]), 1)
         penalty = get_penalty(soil)
-        file = f'evaluate_model/penalty/{group}.csv'
+        file = f'evaluate_model/{now}/penalty/{group}.csv'
         with open(file, 'a') as fd:
             writer_object = writer(fd)
             writer_object.writerow([now, penalty, soil, get_threshhold()])
     if MOTOR in payload.keys():
-        file = f'evaluate_model/motor/{group}.csv'
+        file = f'evaluate_model/{now}/motor/{group}.csv'
         with open(file, 'a') as fd:
             writer_object = writer(fd)
             writer_object.writerow([now, round(float(payload[MOTOR]), 1)])

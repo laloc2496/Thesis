@@ -69,8 +69,9 @@ feeds = [('prediction', 'sensors'), ('prediction_SVM', 'svm'),
 FLAG_IRRIGATION = False
 if __name__ == "__main__":
     mlflow.set_tracking_uri(TRACKING_URI)
-    spark = SparkSession.builder.master("local").getOrCreate()
+    
     while True:
+        spark = SparkSession.builder.master("local").getOrCreate()
         THRESHOLD = get_threshhold()
         for predict_col, feed_id in feeds:
             features = ['humidity', 'light', 'temperature', 'soil']
@@ -117,6 +118,7 @@ if __name__ == "__main__":
                 FLAG_IRRIGATION = False
                 print("No irrgation !")
                 print('Wait...')
+        spark.stop()
         print('done')
         time.sleep(DELAY)
 
