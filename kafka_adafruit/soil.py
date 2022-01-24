@@ -30,7 +30,7 @@ def connected(client, group_name):
 def disconnected(client):
     # Disconnected function will be called when the client disconnects.
     print('Disconnected from Adafruit IO!')
-    sys.exit(1)
+ 
 
 
 
@@ -80,7 +80,11 @@ def send(client):
         time.sleep(SLEEP)
         
 
-client = MQTTClient(ADAFRUIT_IO_USERNAME, ADAFRUIT_IO_KEY, group=GROUP_NAMES[0])
+#client = MQTTClient(ADAFRUIT_IO_USERNAME, ADAFRUIT_IO_KEY, group=GROUP_NAMES[0])
+group_name='sensors'
+account=get_account(group_name)
+client = MQTTClient(account.username,
+                    account.key, group=group_name)
 client.on_connect    = connected
 client.on_disconnect = disconnected
 client.on_message    = get_message

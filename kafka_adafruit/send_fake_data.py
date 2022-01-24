@@ -32,9 +32,9 @@ client.on_disconnect = disconnected
 client.on_message = message
 client.connect()
 client.loop_background()
-data = [('humidity', 80.23), ('light', 20.23),
-        ('soil', 50.55), ('temperature', 28.55)]
-
+# data = [('humidity', 80.23), ('light', 20.23),
+#         ('soil', 50.55), ('temperature', 28.55)]
+data = [('humidity', 80.23), ('light', 20.23), ('temperature', 28.55)]
 
 # client.loop_background()
 while(True):
