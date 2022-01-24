@@ -37,34 +37,38 @@ def message(client, topic_id, payload, group):
     if LIGHT in payload.keys():
         light = round(float(payload[LIGHT]), 1) if float(
             payload[LIGHT]) > 1 else 0.001
-        DICT_GROUP_DATA[group].light = light
-
-        DICT_GROUP_DATA['svm'].light = light
-        DICT_GROUP_DATA['dt'].light = light
-        DICT_GROUP_DATA['bayes'].light = light
+        
+        if group=='sensors':
+            DICT_GROUP_DATA[group].light = light
+            DICT_GROUP_DATA['svm'].light = light
+            DICT_GROUP_DATA['dt'].light = light
+            DICT_GROUP_DATA['bayes'].light = light
     if HUMIDITY in payload.keys():
         humidity = round(float(payload[HUMIDITY]), 1)
-        DICT_GROUP_DATA[group].humidity = humidity
 
-        DICT_GROUP_DATA['svm'].humidity = humidity
-        DICT_GROUP_DATA['dt'].humidity = humidity
-        DICT_GROUP_DATA['bayes'].humidity = humidity
+        if group=='sensors':
+            DICT_GROUP_DATA[group].humidity = humidity
+            DICT_GROUP_DATA['svm'].humidity = humidity
+            DICT_GROUP_DATA['dt'].humidity = humidity
+            DICT_GROUP_DATA['bayes'].humidity = humidity
     if SOIL in payload.keys():
         DICT_GROUP_DATA[group].soil = round(float(payload[SOIL]), 1)
     if TEMPERATURE in payload.keys():
         temperature = round(float(payload[TEMPERATURE]), 1)
-        DICT_GROUP_DATA[group].temperature = temperature
-        DICT_GROUP_DATA['svm'].temperature = temperature
-        DICT_GROUP_DATA['dt'].temperature = temperature
-        DICT_GROUP_DATA['bayes'].temperature = temperature
-
-    if DICT_GROUP_DATA[group].check():
-        if HPC == False:
-            send_message(DICT_GROUP_DATA[group])
-            DICT_GROUP_DATA[group].reset()
-        else:
-            send_message_to_HPC(DICT_GROUP_DATA[group])
-            DICT_GROUP_DATA[group].reset()
+        if group=='sensors':
+            DICT_GROUP_DATA[group].temperature = temperature
+            DICT_GROUP_DATA['svm'].temperature = temperature
+            DICT_GROUP_DATA['dt'].temperature = temperature
+            DICT_GROUP_DATA['bayes'].temperature = temperature
+    for key in DICT_GROUP_DATA.keys():
+        if DICT_GROUP_DATA[key].check():
+            print(f'Send message {key}')
+            if HPC == False:
+                send_message(DICT_GROUP_DATA[key])
+                DICT_GROUP_DATA[key].reset()
+            else:
+                send_message_to_HPC(DICT_GROUP_DATA[key])
+                DICT_GROUP_DATA[key].reset()
 
 
 def connection_to_feed(group_name) -> MQTTClient:

@@ -34,6 +34,7 @@ def write_data(df,batchID):
     df=df.withColumn('time',to_timestamp(col('time'),'HH:mm:ss dd-MM-yyyy'))
     df=df.withColumn(PARTITION,date_format(col('time'),partition_format))
     id=df.first()[0]
+    print(id)
     df=df.drop("id")
     url=f"/user/root/data/{id}/"
     df.coalesce(1).write.mode("append").partitionBy(PARTITION).option("header",'true').csv(url)
