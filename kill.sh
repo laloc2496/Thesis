@@ -16,7 +16,7 @@ echo "killed main_dt"
 kill $(ps aux | grep 'main_bayes.py' | awk '{print $2}')
 echo "killed main_bayes"
 
-kill $(ps aux | grep 'evaluate_model.py.py' | awk '{print $2}')
+kill $(ps aux | grep 'evaluate_model.py' | awk '{print $2}')
 echo "killed evaluate_model.py"
 
 kill $(ps aux | grep 'soil.py' | awk '{print $2}')
