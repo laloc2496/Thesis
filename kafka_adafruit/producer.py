@@ -1,3 +1,4 @@
+import time
 import requests
 from kafka import KafkaProducer
 from object import Object
@@ -63,12 +64,14 @@ def message(client, topic_id, payload, group):
     for key in DICT_GROUP_DATA.keys():
         if DICT_GROUP_DATA[key].check():
             print(f'Send message {key}')
-            if HPC == False:
+            if HPC == False:      
                 send_message(DICT_GROUP_DATA[key])
                 DICT_GROUP_DATA[key].reset()
+                time.sleep(3)
             else:
                 send_message_to_HPC(DICT_GROUP_DATA[key])
                 DICT_GROUP_DATA[key].reset()
+                time.sleep(3)
 
 
 def connection_to_feed(group_name) -> MQTTClient:
