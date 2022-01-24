@@ -17,7 +17,8 @@ entry_points:
     parameters:
       path: {type: str}
       feed: {type: str}
-    command: "python3 ensemble_model/EnsembleStacking.py -p {path} --id {feed} -f  humidity light temperature soil >> log_predict.out"
+      predict_col: {type: str}
+    command: "python3 ensemble_model/EnsembleStacking.py -p {path} --id {feed} --predict {predict_col}  -f  humidity light temperature soil >> log_predict.out"
   main:
     parameters:
       maxIter: {type: int, default: 5}

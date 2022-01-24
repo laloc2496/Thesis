@@ -11,7 +11,7 @@ import mlflow
 # Get latest data by time interval to check wheather Irgriration ?
 import subprocess
 DELAY = 60*4
-feeds = ['sensors']
+
 
 FEATURES = ['humidity', 'light', 'temperature']
 TIMELINE = [("6:00", "9:59", 35), ("10:00", "16:59", 50),
@@ -62,23 +62,15 @@ def change_previous_prediction(spark: SparkSession):
     print('done')
 
 
+feeds = [('prediction', 'sensors'), ('prediction_SVM', 'svm'),
+         ('prediction_DecisionTree', 'dt'), ('prediction_Bayes', 'bayes')]
 FLAG_IRRIGATION = False
 if __name__ == "__main__":
     mlflow.set_tracking_uri(TRACKING_URI)
-    spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
+    spark = SparkSession.builder.master("local").getOrCreate()
     while True:
         THRESHOLD = get_threshhold()
-        for feed_id in feeds:
-            #path = "data/sensors/partition=13-28-December-2021"
-
-            # Unnote this row below to get real time data
-            # (MAKE SURE producer and consumer run before)
-            # try:
-            #     path=f'data/{feed_id}/'+current_partition()
-            #     df = spark.read.csv(path, header=True).orderBy(
-            #         "time", ascending=False).limit(1)
-            # except:
-            #     continue
+        for predict_col, feed_id in feeds:
 
             uri_folder = f'/user/root/data/{feed_id}/'+current_partition()
             #uri_folder = '/user/root/data/sensors/partition=13-28-December-2021'
@@ -87,31 +79,31 @@ if __name__ == "__main__":
                 df = spark.read.csv(path, header=True)
             else:
                 print("Can not load data")
-                time.sleep(60)
                 continue
             df = df.select(['soil'])
             soil = float(df.collect()[0]['soil'])
             if soil < THRESHOLD:
                 print("Send request irrigation")
                 parameters = {"path": path,
-                              "feed": feed_id
+                              "feed": feed_id,
+                              "predict_col": predict_col
                               }
                 if FLAG_IRRIGATION == True and (THRESHOLD-soil) > 10:
                     change_previous_prediction(spark)
 
                 # Run code to predict time to irrigation and send time irrigation to motor.
                 # Check result in: https://io.adafruit.com/quangbinh/feeds/sensors.motor
-                FLAG_IRRIGATION = True
+                #FLAG_IRRIGATION = True
                 run_checkpoint(uri=".", entry_point="stacking_prediction",
                                use_conda=False, parameters=parameters)
-                time.sleep(DELAY*2)
+                time.sleep(60)
             else:
                 FLAG_IRRIGATION = False
                 print("No irrgation !")
                 print('Wait...')
-                time.sleep(DELAY)
+        time.sleep(DELAY)
 
-#chay 4 cai main
-#chay 4 cai soil
-#chay producer
-#chay consumer
+# chay 4 cai main
+# chay 4 cai soil
+# chay producer
+# chay consumer

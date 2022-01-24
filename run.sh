@@ -30,33 +30,33 @@ bash soil.sh
 if pgrep -f "ensemble_model/main.py"; then
     echo "Main alrealy running.."
 else 
-    nohup python3 ensemble_model/main.py > logs/sensors_log.out &
+    nohup python3 ensemble_model/main.py > logs/main_log.out &
     echo "Start main sensors"
 fi  
 
 
-if pgrep -f "ensemble_model/main_svm.py"; then
-    echo "svm alrealy running.."
-else 
-    nohup python3 ensemble_model/main_svm.py > logs/svm_log.out &
-    echo "Start main svm"
-fi  
+# if pgrep -f "ensemble_model/main_svm.py"; then
+#     echo "svm alrealy running.."
+# else 
+#     nohup python3 ensemble_model/main_svm.py > logs/svm_log.out &
+#     echo "Start main svm"
+# fi  
 
 
-if pgrep -f "ensemble_model/main_dt.py"; then
-    echo "dt alrealy running.."
-else 
-    nohup python3 ensemble_model/main_dt.py > logs/dt_log.out &
-    echo "Start main dt"
-fi  
+# if pgrep -f "ensemble_model/main_dt.py"; then
+#     echo "dt alrealy running.."
+# else 
+#     nohup python3 ensemble_model/main_dt.py > logs/dt_log.out &
+#     echo "Start main dt"
+# fi  
 
 
-if pgrep -f "ensemble_model/main_bayes.py"; then
-    echo "bayes alrealy running.."
-else 
-    nohup python3 ensemble_model/main_bayes.py > logs/bayes_log.out &
-    echo "Start main bayes"
-fi  
+# if pgrep -f "ensemble_model/main_bayes.py"; then
+#     echo "bayes alrealy running.."
+# else 
+#     nohup python3 ensemble_model/main_bayes.py > logs/bayes_log.out &
+#     echo "Start main bayes"
+# fi  
  
 #evaluate--------------------
 if pgrep -f "kafka_adafruit/evaluate_model.py"; then
