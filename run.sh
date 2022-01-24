@@ -30,7 +30,7 @@ bash soil.sh
 if pgrep -f "ensemble_model/main.py"; then
     echo "Main alrealy running.."
 else 
-    nohup python3 ensemble_model/main.py > logs/main_log.out &
+    nohup python3 ensemble_model/main.py > logs/log_main.out &
     echo "Start main sensors"
 fi  
 

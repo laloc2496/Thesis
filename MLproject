@@ -7,7 +7,7 @@ entry_points:
     parameters:
       feed_id: {type: str}
       value: {type: int}
-    command: "python3 kafka_adafruit/motor.py --id {feed_id} --value {value} >> log_motor.out"
+    command: "python3 kafka_adafruit/motor.py --id {feed_id} --value {value} >> logs/log_motor.out"
   stacking_train:
     parameters:
       path: {type: str}
@@ -18,7 +18,7 @@ entry_points:
       path: {type: str}
       feed: {type: str}
       predict_col: {type: str}
-    command: "python3 ensemble_model/EnsembleStacking.py -p {path} --id {feed} --predict {predict_col}  -f  humidity light temperature soil >> log_predict.out"
+    command: "python3 ensemble_model/EnsembleStacking.py -p {path} --id {feed} --predict {predict_col}  -f  humidity light temperature soil >> logs/log_predict.out"
   main:
     parameters:
       maxIter: {type: int, default: 5}

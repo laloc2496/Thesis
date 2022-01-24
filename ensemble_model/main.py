@@ -8,14 +8,15 @@ from pyspark.sql.functions import col, when
 from mlflow import run as run_checkpoint
 import time
 import mlflow
+from EnsembleStacking import transform
 # Get latest data by time interval to check wheather Irgriration ?
 import subprocess
 DELAY = 60*4
 
 
 FEATURES = ['humidity', 'light', 'temperature']
-TIMELINE = [("6:00", "9:59", 35), ("10:00", "16:59", 50),
-            ("17:00", "5:59", 65)]
+TIMELINE = [("6:00", "9:59", 30), ("10:00", "16:59", 50),
+            ("17:00", "5:59", 60)]
 
 # THRESHOLD=40
 
@@ -64,6 +65,7 @@ def change_previous_prediction(spark: SparkSession):
 
 feeds = [('prediction', 'sensors'), ('prediction_SVM', 'svm'),
          ('prediction_DecisionTree', 'dt'), ('prediction_Bayes', 'bayes')]
+
 FLAG_IRRIGATION = False
 if __name__ == "__main__":
     mlflow.set_tracking_uri(TRACKING_URI)
@@ -71,7 +73,7 @@ if __name__ == "__main__":
     while True:
         THRESHOLD = get_threshhold()
         for predict_col, feed_id in feeds:
-
+            features = ['humidity', 'light', 'temperature', 'soil']
             uri_folder = f'/user/root/data/{feed_id}/'+current_partition()
             #uri_folder = '/user/root/data/sensors/partition=13-28-December-2021'
             path = get_latest_path(uri_folder)
@@ -94,13 +96,28 @@ if __name__ == "__main__":
                 # Run code to predict time to irrigation and send time irrigation to motor.
                 # Check result in: https://io.adafruit.com/quangbinh/feeds/sensors.motor
                 #FLAG_IRRIGATION = True
-                run_checkpoint(uri=".", entry_point="stacking_prediction",
-                               use_conda=False, parameters=parameters)
-                time.sleep(60)
+                # run_checkpoint(uri=".", entry_point="stacking_prediction",
+                #                use_conda=False, parameters=parameters)
+                # time.sleep(60)
+
+                print(f"Prediction for {feed_id}")
+                print(f'Uri data prediction: {path}')
+                df = spark.read.csv(path, header=True).orderBy(
+                    "time", ascending=False).limit(1)
+                df = df.select(features)
+                for feature in features:
+                    df = df.withColumn(feature, col(feature).cast(FloatType()))
+                result = transform(df)
+                features.append("prediction")
+                df = result.select(features)
+                result = result.collect()[0]
+                run_checkpoint(uri='.', entry_point='send_time_irrigation', use_conda=False, parameters={
+                    'feed_id': feed_id, 'value': int(result[predict_col])})
             else:
                 FLAG_IRRIGATION = False
                 print("No irrgation !")
                 print('Wait...')
+        print('done')
         time.sleep(DELAY)
 
 # chay 4 cai main

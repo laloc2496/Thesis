@@ -15,14 +15,15 @@ from pyspark.sql.types import FloatType
 from pyspark.sql.functions import col
 import time
 
+
 class EnsembleStacking():
-    def __init__(self,fold=40) -> None:
+    def __init__(self, fold=40) -> None:
         self.features_lv1 = None
         self.features_lv2 = None
         self.base_models = dict()
         self.meta_model = None
         self.model_name = 'meta_model'
-        self.fold= fold
+        self.fold = fold
 
     def fit(self, dataset, features):
         self.features_lv1 = features
@@ -51,7 +52,7 @@ class EnsembleStacking():
             for key in self.base_models:
                 mlflow.log_param('uri_'+key, self.base_models[key]['id'])
             mlflow.spark.log_model(self.meta_model, "model")
-            mlflow.log_param("fold",self.fold)
+            mlflow.log_param("fold", self.fold)
         return run_id
 
 # class EnsembleStacking(Transformer):
@@ -100,15 +101,16 @@ if __name__ == "__main__":
     parser.add_argument("--path", "-p", type=str)
     parser.add_argument('--features', '-f', nargs="+")
     parser.add_argument('--id', type=str)
+    parser.add_argument('--predict', type=str)
     args = parser.parse_args()
     uri_data_train = args.train
     uri_data_predict = args.path
     features = args.features
-    
+
     if uri_data_train:
         # train
         start = time.time()
-        FOLD=20
+        FOLD = 20
         spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
         #uri_data_train = "/home/binh/Thesis/ensemble_model/data/sample_data_test.csv"
         try:
@@ -121,13 +123,16 @@ if __name__ == "__main__":
 
         end = time.time()
         print("Finish")
-        print(f"Runtime of the program with {ensemble_stacking.fold} FOLD is {end - start}")
-        
-        
+        print(
+            f"Runtime of the program with {ensemble_stacking.fold} FOLD is {end - start}")
+
     elif uri_data_predict:
         # predict
+        
         spark = SparkSession.builder.master("local").getOrCreate()
         feed_id = args.id
+        prediction_col = args.predict
+        print(f"Prediction for {feed_id}")
         #path = f'data/{feed_id}/'+current_partition()
         path = uri_data_predict
         print(f'Uri data prediction: {path}')
@@ -136,20 +141,20 @@ if __name__ == "__main__":
         df = df.select(features)
         for feature in features:
             df = df.withColumn(feature, col(feature).cast(FloatType()))
-        
+
         result = transform(df)
-        url= '/user/root/data/retrain/'
+        url = '/user/root/data/retrain/'
         features.append("prediction")
-        df=result.select(features)
+        df = result.select(features)
         result = result.collect()[0]
 
         run_checkpoint(uri='.', entry_point='send_time_irrigation', use_conda=False, parameters={
-                       'feed_id': feed_id, 'value': int(result['prediction'])})
+                       'feed_id': feed_id, 'value': int(result[prediction_col])})
 
-        df=df.withColumnRenamed("prediction","label")
-        df.write.mode("append").option("header",'true').csv(url)
+        # df=df.withColumnRenamed("prediction","label")
+        # df.write.mode("append").option("header",'true').csv(url)
 
 #FEATURES = ['humidity', 'light']
 
-# python3 EnsembleStacking.py -p data/sensors/partition=13-28-December-2021 --id sensors -f humidity light  >>log.txt
+# python3 ensemble_model/EnsembleStacking.py -p /user/root/data/sensors/partition=10-24-January-2022/part-00000-43bbe2b3-075a-4ae7-b475-09071315decf.c000.csv --predict prediction --id sensors -f  humidity light temperature soil >> log.txt
 # spark-submit EnsembleStacking.py -t /home/binh/Thesis/ensemble_model/data/sample_data_test.csv -f humidity light >> log.txt
