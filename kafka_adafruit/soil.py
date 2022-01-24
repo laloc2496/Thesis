@@ -59,7 +59,7 @@ def downtrend():
   print("downtrend")
   global soil, alpha , beta
   rand1 = [random.uniform(-3*beta,3*beta) for x in  range(0, int(random.uniform(alpha,2*alpha)))]
-  rand2 = [random.uniform(-4*beta,5*beta) for x in range(0, int(random.uniform(3*alpha,4*alpha)))]
+  rand2 = [random.uniform(-3*beta,5*beta) for x in range(0, int(random.uniform(3*alpha,4*alpha)))]
   #rand3 = [random.uniform(-0.1,0.1) for x in  range(0, inf)]
   for x in rand1+rand2:
     if up: uptrend()    
