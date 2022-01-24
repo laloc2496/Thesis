@@ -78,7 +78,7 @@ def send(client):
     while True:
         if soil <0:
             soil=0
-        client.publish("soil",soil,GROUP_NAMES[0])
+        client.publish("soil",soil,group_name)
         time.sleep(SLEEP)
         
 
