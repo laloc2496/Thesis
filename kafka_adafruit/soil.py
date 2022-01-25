@@ -51,7 +51,9 @@ def uptrend():
   rand4 = [random.uniform(-3*beta,3*beta) for x in  range(int(0.5*irrigation_time) )]
   for x in rand1+rand2+rand3+rand4:
     if soil>100: change(0)
-    else : change(-x)
+    else: 
+      change(-x)
+    time.sleep(5)
   up = False
   print("uptrend take ", len(rand1+rand2), "  from ", before, "  to ", soil)
   downtrend()

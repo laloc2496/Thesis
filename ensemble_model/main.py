@@ -11,7 +11,7 @@ import mlflow
 from EnsembleStacking import transform
 # Get latest data by time interval to check wheather Irgriration ?
 import subprocess
-DELAY = 60*4
+DELAY = 60*4*2
 
 
 FEATURES = ['humidity', 'light', 'temperature']

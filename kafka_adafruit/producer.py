@@ -14,7 +14,6 @@ def to_json(object: Object):
 
 
 def send_message(message: Object, topic=TOPIC_KAFKA):
-    message_svm = message
     producer.send(TOPIC_KAFKA, to_json(message).encode('utf-8'))
 
 
@@ -67,11 +66,11 @@ def message(client, topic_id, payload, group):
             if HPC == False:      
                 send_message(DICT_GROUP_DATA[key])
                 DICT_GROUP_DATA[key].reset()
-                time.sleep(3)
+                time.sleep(10)
             else:
                 send_message_to_HPC(DICT_GROUP_DATA[key])
                 DICT_GROUP_DATA[key].reset()
-                time.sleep(3)
+                time.sleep(15)
 
 
 def connection_to_feed(group_name) -> MQTTClient:
