@@ -1,6 +1,6 @@
 
 from datetime import datetime as dt
-from EnsembleStacking import current_partition
+from EnsembleStacking import current_partition, previous_partition
 from pyspark.sql import SparkSession
 from utils import SPARK_MASTER, TRACKING_URI
 from pyspark.sql.types import FloatType
@@ -46,7 +46,8 @@ def get_latest_path(path):
                 if '_SUCCESS' in path:
                     continue
                 return path
-    except:
+    except Exception as e:
+        print(e)
         return None
 
 
@@ -69,7 +70,7 @@ feeds = [('prediction', 'sensors'), ('prediction_SVM', 'svm'),
 FLAG_IRRIGATION = False
 if __name__ == "__main__":
     mlflow.set_tracking_uri(TRACKING_URI)
-    
+
     while True:
         spark = SparkSession.builder.master("local").getOrCreate()
         THRESHOLD = get_threshhold()
@@ -78,6 +79,10 @@ if __name__ == "__main__":
             uri_folder = f'/user/root/data/{feed_id}/'+current_partition()
             #uri_folder = '/user/root/data/sensors/partition=13-28-December-2021'
             path = get_latest_path(uri_folder)
+            if not path:
+                uri_folder = f'/user/root/data/{feed_id}/' + \
+                    previous_partition(1)
+                path = get_latest_path(uri_folder)
             if path:
                 df = spark.read.csv(path, header=True)
             else:

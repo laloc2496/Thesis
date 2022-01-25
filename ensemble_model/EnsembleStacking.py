@@ -14,7 +14,7 @@ import argparse
 from pyspark.sql.types import FloatType
 from pyspark.sql.functions import col
 import time
-
+from datetime import timedelta
 
 class EnsembleStacking():
     def __init__(self, fold=40) -> None:
@@ -85,6 +85,9 @@ def transform(dataset):
     result = meta_model.transform(data)
     return result
 
+def previous_partition(delta):
+    current_date = (dt.now()-timedelta(hours=delta)).strftime("%H-%d-%B-%Y")
+    return 'partition='+current_date
 
 def current_partition(date=None):
     if date:
