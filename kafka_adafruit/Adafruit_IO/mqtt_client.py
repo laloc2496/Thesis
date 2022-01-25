@@ -302,8 +302,9 @@ class MQTTClient(object):
           (res, self._pub_mid) = self._client.publish('{0}/feeds/{1}'.format(feed_user, feed_id),
               payload=value)
         elif group_id is not None: # group-specified feed
-          self._client.publish('{0}/feeds/{1}.{2}'.format(self._username, group_id, feed_id),
+            info=self._client.publish('{0}/feeds/{1}.{2}'.format(self._username, group_id, feed_id),
               payload=value)
+            return info
         else: # regular feed
           (res, self._pub_mid) = self._client.publish('{0}/feeds/{1}'.format(self._username, feed_id),
               payload=value)
