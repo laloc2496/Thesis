@@ -45,7 +45,7 @@ def uptrend():
   global soil,irrigation_time, up, beta
   before = soil
   #irrigation_time = int(random.uniform(0,1800)) # tưới trong bao lâu
-  rand1 = [random.uniform(-2*beta,2*beta) for x in  range( int(irrigation_time/3) )]
+  rand1 = [random.uniform(-2*beta,3*beta) for x in  range( int(irrigation_time/3) )]
   rand2 = [random.uniform(-3*beta,4*beta) for x in  range(int(2*irrigation_time/3) )]
   rand3 = [random.uniform(-3*beta,2.5*beta) for x in  range(int(0.1*irrigation_time) )]
   rand4 = [random.uniform(-3*beta,3*beta) for x in  range(int(0.5*irrigation_time) )]
@@ -53,7 +53,7 @@ def uptrend():
     if soil>100: change(0)
     else: 
       change(-x)
-    time.sleep(5)
+
   up = False
   print("uptrend take ", len(rand1+rand2), "  from ", before, "  to ", soil)
   downtrend()

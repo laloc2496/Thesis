@@ -17,7 +17,7 @@ if __name__ == "__main__":
     print(dt.now())
     try:
         client = connection_to_feed(feed_id)
-        client.publish('motor', times_irrigation[value]*3, feed_id)
+        client.publish('motor', times_irrigation[value]*2, feed_id)
         print("Success !")
     except:
         print("Can not send request")
