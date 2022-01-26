@@ -35,7 +35,7 @@ def get_threshhold():
 
 def get_penalty(soil):
     threshhold = get_threshhold()
-    print(threshhold)
+    print(threshhold) 
     if soil < threshhold:
         value = threshhold-soil
         if value < 10:
@@ -44,6 +44,12 @@ def get_penalty(soil):
             return -2
         if value >= 15:
             return -3
+    if soil > threshhold:
+        value = soil-threshhold
+        if value >= 15 and value < 20:
+            return -1
+        if value >= 20:
+            return -2
     return 0
 
 

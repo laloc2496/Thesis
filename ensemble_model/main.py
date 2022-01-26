@@ -107,6 +107,7 @@ if __name__ == "__main__":
                 # time.sleep(60)
 
                 print(f"Prediction for {feed_id}")
+                print(f'Current soil: {soil}<{THRESHOLD}')
                 print(f'Uri data prediction: {path}')
                 df = spark.read.csv(path, header=True).orderBy(
                     "time", ascending=False).limit(1)
@@ -121,7 +122,8 @@ if __name__ == "__main__":
                     'feed_id': feed_id, 'value': int(result[predict_col])})
             else:
                 FLAG_IRRIGATION = False
-                print("No irrgation !")
+                print(f"No irrgation for {feed_id}!")
+                print(f'Current soil: {soil}>={THRESHOLD}')
                 print('Wait...')
         spark.stop()
         print('done')
