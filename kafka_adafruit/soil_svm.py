@@ -5,14 +5,14 @@ from threading import Thread
 from Adafruit_IO import MQTTClient
 from utils import *
  
-
+ 
 soil = 65
 up = False
 irrigation_time = 0 # seconds
 update_time = 1
 alpha = 500
 beta = 0.1
-SLEEP=180
+SLEEP=150
 def get_message(client, topic_id, payload,group):
     global irrigation_time,up
     if "motor" in payload.keys():
@@ -53,7 +53,7 @@ def uptrend():
     if soil>100: change(0)
     else: 
       change(-x)
-
+ 
   up = False
   print("uptrend take ", len(rand1+rand2), "  from ", before, "  to ", soil)
   downtrend()
@@ -85,7 +85,7 @@ def send(client):
         
 
 #client = MQTTClient(ADAFRUIT_IO_USERNAME, ADAFRUIT_IO_KEY, group=GROUP_NAMES[0])
-group_name='sensors'
+group_name='svm'
 account=get_account(group_name)
 client = MQTTClient(account.username,
                     account.key, group=group_name)
