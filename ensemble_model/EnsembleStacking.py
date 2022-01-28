@@ -43,6 +43,7 @@ class EnsembleStacking():
 
     def save(self):
         mlflow.set_tracking_uri(TRACKING_URI)
+        mlflow.set_experiment(experiment_name='model')
         run_id = None
         with mlflow.start_run(run_name=self.model_name) as run:
             run_id = run.info.run_id
@@ -66,6 +67,7 @@ class EnsembleStacking():
 
 def get_meta_model(experiment_id=None):
     client = MlflowClient(tracking_uri=TRACKING_URI)
+    experiment_id="1"
     experiment_id = experiment_id if experiment_id is not None else _get_experiment_id()
     all_run_infos = client.list_run_infos(experiment_id)
     latest_run = all_run_infos[0]
@@ -113,7 +115,7 @@ if __name__ == "__main__":
     if uri_data_train:
         # train
         start = time.time()
-        FOLD = 20
+        FOLD = 40
         spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
         #uri_data_train = "/home/binh/Thesis/ensemble_model/data/sample_data_test.csv"
         try:
@@ -160,4 +162,4 @@ if __name__ == "__main__":
 #FEATURES = ['humidity', 'light']
 
 # python3 ensemble_model/EnsembleStacking.py -p /user/root/data/sensors/partition=10-24-January-2022/part-00000-43bbe2b3-075a-4ae7-b475-09071315decf.c000.csv --predict prediction --id sensors -f  humidity light temperature soil >> log.txt
-# spark-submit EnsembleStacking.py -t /home/binh/Thesis/ensemble_model/data/sample_data_test.csv -f humidity light >> log.txt
+#spark-submit ensemble_model/EnsembleStacking.py -t /home/binh/Thesis/ensemble_model/data/data_train.csv -f humidity light temperature soil >> log.txt

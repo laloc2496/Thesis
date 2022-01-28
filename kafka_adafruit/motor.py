@@ -3,7 +3,7 @@ from producer import connection_to_feed
 import argparse
 import time
 from datetime import datetime as dt
-times_irrigation=[60,120,180,240]
+times_irrigation=[40,100,180,240]
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(

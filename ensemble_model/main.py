@@ -14,7 +14,7 @@ import subprocess
 DELAY = 60*4*2
 
 
-FEATURES = ['humidity', 'light', 'temperature','soil']
+FEATURES = ['humidity', 'light', 'temperature', 'soil']
 TIMELINE = [("6:00", "9:59", 30), ("10:00", "16:59", 50),
             ("17:00", "5:59", 60)]
 
@@ -64,8 +64,8 @@ def change_previous_prediction(spark: SparkSession):
     print('done')
 
 
-feeds = [('prediction_SVM', 'svm'),('prediction', 'sensors'),
-         ('prediction_DecisionTree', 'dt'), ('prediction_Bayes', 'bayes')]
+feeds = [('prediction_SVM', 'svm'), ('prediction_DecisionTree', 'dt'),
+         ('prediction_Bayes', 'bayes'), ('prediction', 'sensors')]
 
 FLAG_IRRIGATION = False
 if __name__ == "__main__":
@@ -114,6 +114,7 @@ if __name__ == "__main__":
                 df = df.select(features)
                 for feature in features:
                     df = df.withColumn(feature, col(feature).cast(FloatType()))
+
                 result = transform(df)
                 features.append("prediction")
                 df = result.select(features)

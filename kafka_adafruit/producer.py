@@ -66,7 +66,7 @@ def message(client, topic_id, payload, group):
             if HPC == False:      
                 send_message(DICT_GROUP_DATA[key])
                 DICT_GROUP_DATA[key].reset()
-                time.sleep(10)
+                time.sleep(15)
             else:
                 send_message_to_HPC(DICT_GROUP_DATA[key])
                 DICT_GROUP_DATA[key].reset()
