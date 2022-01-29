@@ -82,8 +82,14 @@ feeds = [('prediction_SVM', 'svm'), ('prediction_DecisionTree', 'dt'),
 FLAG_IRRIGATION = False
 if __name__ == "__main__":
     mlflow.set_tracking_uri(TRACKING_URI)
-
+    previous_train = None
     while True:
+
+        today = dt.now()
+        if today.day == 1 and previous_train != today.strftime("%Y-%m-%d"):
+            previous_train = today.strftime("%Y-%m-%d")
+            retrain_model()
+
         spark = SparkSession.builder.master("local").getOrCreate()
         THRESHOLD = get_threshhold()
         for predict_col, feed_id in feeds:
