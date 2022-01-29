@@ -3,6 +3,8 @@ name: ensemble_learning
 conda_env: conda.yaml
 
 entry_points:
+  reservoir_sampling:
+    command: "python3 ensemble_model/reservoir_sampling.py"
   send_time_irrigation:
     parameters:
       feed_id: {type: str}
@@ -11,8 +13,7 @@ entry_points:
   stacking_train:
     parameters:
       path: {type: str}
-      feed: {type: str}
-    command: "spark-submit ensemble_model/EnsembleStacking.py -t {path} --id {feed}  -f humidity light temperature soil"
+    command: "spark-submit ensemble_model/EnsembleStacking.py -t {path} -f humidity light temperature soil"
   stacking_prediction:
     parameters:
       path: {type: str}
@@ -20,6 +21,4 @@ entry_points:
       predict_col: {type: str}
     command: "python3 ensemble_model/EnsembleStacking.py -p {path} --id {feed} --predict {predict_col}  -f  humidity light temperature soil >> logs/log_predict.out"
   main:
-    parameters:
-      maxIter: {type: int, default: 5}
-    command: "spark-submit main.py {maxIter}"
+    command: "spark-submit main.py"

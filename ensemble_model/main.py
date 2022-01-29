@@ -51,6 +51,18 @@ def get_latest_path(path):
         return None
 
 
+def retrain_model(path=None):
+    if not path:
+        run_checkpoint(
+            uri='.', entry_point='reservoir_sampling', use_conda=False)
+        path = '/home/binh/Thesis/ensemble_model/data/data_retrain.csv'
+    parameters = {
+        "path": path
+    }
+    run_checkpoint(uri='.', entry_point='stacking_train',
+                   use_conda=False, parameters=parameters)
+
+
 def change_previous_prediction(spark: SparkSession):
     folder = '/user/root/data/retrain/'
     path = get_latest_path(folder)
@@ -129,5 +141,3 @@ if __name__ == "__main__":
         spark.stop()
         print('done')
         time.sleep(DELAY)
-
- 

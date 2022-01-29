@@ -37,7 +37,7 @@ def reservoir_sampling(df_new_data: pd.DataFrame) -> Boolean:
             location = random.randint(0, index)
             if location < N:
                 df_retrain.loc[location, :] = row[:]
-    # remove all nouse data
+    # remove all unuse data
     #subprocess.run(f'hdfs dfs -rm {RETRAIN_PATH}', shell=True)
     # ------------
     df_retrain.reset_index(drop=True, inplace=True)
