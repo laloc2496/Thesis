@@ -130,7 +130,4 @@ if __name__ == "__main__":
         print('done')
         time.sleep(DELAY)
 
-# chay 4 cai main
-# chay 4 cai soil
-# chay producer
-# chay consumer
+ 

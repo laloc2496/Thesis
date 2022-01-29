@@ -118,6 +118,7 @@ format input:
 """
 #HPC = False
 if __name__ == "__main__":
+
     GROUP_NAMES = ['sensors', 'svm', 'dt', 'bayes']
     parser = argparse.ArgumentParser(
         description='This script used to send data to Kafka')

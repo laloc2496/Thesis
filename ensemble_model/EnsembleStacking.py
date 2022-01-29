@@ -16,6 +16,7 @@ from pyspark.sql.functions import col
 import time
 from datetime import timedelta
 
+
 class EnsembleStacking():
     def __init__(self, fold=40) -> None:
         self.features_lv1 = None
@@ -67,7 +68,7 @@ class EnsembleStacking():
 
 def get_meta_model(experiment_id=None):
     client = MlflowClient(tracking_uri=TRACKING_URI)
-    experiment_id="1"
+    experiment_id = "1"
     experiment_id = experiment_id if experiment_id is not None else _get_experiment_id()
     all_run_infos = client.list_run_infos(experiment_id)
     latest_run = all_run_infos[0]
@@ -87,9 +88,11 @@ def transform(dataset):
     result = meta_model.transform(data)
     return result
 
+
 def previous_partition(delta):
     current_date = (dt.now()-timedelta(hours=delta)).strftime("%H-%d-%B-%Y")
     return 'partition='+current_date
+
 
 def current_partition(date=None):
     if date:
@@ -133,7 +136,7 @@ if __name__ == "__main__":
 
     elif uri_data_predict:
         # predict
-        
+
         spark = SparkSession.builder.master("local").getOrCreate()
         feed_id = args.id
         prediction_col = args.predict
@@ -156,10 +159,11 @@ if __name__ == "__main__":
         run_checkpoint(uri='.', entry_point='send_time_irrigation', use_conda=False, parameters={
                        'feed_id': feed_id, 'value': int(result[prediction_col])})
 
-        # df=df.withColumnRenamed("prediction","label")
-        # df.write.mode("append").option("header",'true').csv(url)
+        #save retrain data
+        df=df.withColumnRenamed("prediction","label")
+        df.write.mode("append").option("header",'true').csv(url)
 
 #FEATURES = ['humidity', 'light']
 
 # python3 ensemble_model/EnsembleStacking.py -p /user/root/data/sensors/partition=10-24-January-2022/part-00000-43bbe2b3-075a-4ae7-b475-09071315decf.c000.csv --predict prediction --id sensors -f  humidity light temperature soil >> log.txt
-#spark-submit ensemble_model/EnsembleStacking.py -t /home/binh/Thesis/ensemble_model/data/data_train.csv -f humidity light temperature soil >> log.txt
+# spark-submit ensemble_model/EnsembleStacking.py -t /home/binh/Thesis/ensemble_model/data/data_train.csv -f humidity light temperature soil >> log.txt
