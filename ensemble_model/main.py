@@ -20,6 +20,8 @@ TIMELINE = [("6:00", "9:59", 30), ("10:00", "16:59", 50),
 
 # THRESHOLD=40
 
+# li do ko hien thuc voting vi so luong model la it (3) trong khi so luong label lai nhieu
+# cho nen truong hop moi model predict ra 1 class thi ko biet chon ntn. luc do se la van de
 
 def list2String(s):
     return " ".join(s)

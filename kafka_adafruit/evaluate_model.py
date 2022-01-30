@@ -10,8 +10,8 @@ SOIL = 'soil'
 TEMPERATURE = 'temperature'
 HUMIDITY = 'humidity'
 feeds = [LIGHT, MOTOR, SOIL, TEMPERATURE, HUMIDITY]
-TIMELINE = [("6:00", "9:59", 35), ("10:00", "16:59", 50),
-            ("17:00", "5:59", 65)]
+TIMELINE = [("6:00", "9:59", 30), ("10:00", "16:59", 50),
+            ("17:00", "5:59", 60)]
 
 GROUP_NAMES = ['sensors', 'svm', 'bayes','dt']
 
