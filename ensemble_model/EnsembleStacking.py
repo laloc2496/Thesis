@@ -44,7 +44,8 @@ class EnsembleStacking():
 
     def save(self):
         mlflow.set_tracking_uri(TRACKING_URI)
-        mlflow.set_experiment(experiment_name='model')
+        #mlflow.set_experiment(experiment_name='model')
+        mlflow.set_experiment(experiment_name='model_retrain')
         run_id = None
         with mlflow.start_run(run_name=self.model_name) as run:
             run_id = run.info.run_id
@@ -101,6 +102,25 @@ def current_partition(date=None):
     return 'partition='+current_date
 
 
+def train_model(features,uri_data_train):
+    mlflow.set_tracking_uri(TRACKING_URI)
+    start = time.time()
+    FOLD = 40
+    spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
+    #uri_data_train = "/home/binh/Thesis/ensemble_model/data/sample_data_test.csv"
+    try:
+        df = get_train_data(spark, uri_data_train)
+    except:
+        print("Can not load data !")
+    ensemble_stacking = EnsembleStacking(fold=FOLD)
+    ensemble_stacking.fit(df, features)
+    ensemble_stacking.save()
+
+    end = time.time()
+    print("Finish")
+    print(
+        f"Runtime of the program with {ensemble_stacking.fold} FOLD is {end - start}")
+
 if __name__ == "__main__":
     mlflow.set_tracking_uri(TRACKING_URI)
     parser = argparse.ArgumentParser(
@@ -117,22 +137,7 @@ if __name__ == "__main__":
 
     if uri_data_train:
         # train
-        start = time.time()
-        FOLD = 40
-        spark = SparkSession.builder.master(SPARK_MASTER).getOrCreate()
-        #uri_data_train = "/home/binh/Thesis/ensemble_model/data/sample_data_test.csv"
-        try:
-            df = get_train_data(spark, uri_data_train)
-        except:
-            print("Can not load data !")
-        ensemble_stacking = EnsembleStacking(fold=FOLD)
-        ensemble_stacking.fit(df, features)
-        ensemble_stacking.save()
-
-        end = time.time()
-        print("Finish")
-        print(
-            f"Runtime of the program with {ensemble_stacking.fold} FOLD is {end - start}")
+        train_model(features,uri_data_train)
 
     elif uri_data_predict:
         # predict
