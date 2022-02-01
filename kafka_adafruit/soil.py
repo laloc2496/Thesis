@@ -6,7 +6,7 @@ from Adafruit_IO import MQTTClient
 from utils import *
  
 
-soil = 65
+soil = 50
 up = False
 irrigation_time = 0 # seconds
 update_time = 1
