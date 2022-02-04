@@ -1,5 +1,9 @@
 
+from concurrent.futures import thread
 from datetime import datetime as dt
+from xmlrpc.client import Boolean
+
+from sqlalchemy import true
 from EnsembleStacking import current_partition, previous_partition
 from pyspark.sql import SparkSession
 from utils import SPARK_MASTER, TRACKING_URI
@@ -61,25 +65,30 @@ def retrain_model(path=None):
     parameters = {
         "path": path
     }
-    run_checkpoint(uri='.', entry_point='stacking_train',
-                   use_conda=False, parameters=parameters)
+    # run_checkpoint(uri='.', entry_point='stacking_train',
+    #                use_conda=False, parameters=parameters)
 
 
-def change_previous_prediction(spark: SparkSession):
+def change_previous_prediction(spark: SparkSession,up=True):
     folder = '/user/root/data/retrain/'
     path = get_latest_path(folder)
     print(path)
     df = spark.read.csv(path, header=True)
     df.show()
     df = df.withColumn("label", col("label").cast("Integer"))
-    df = df.withColumn("label", when(col("label") < 3, col('label')+1))
+    if up:
+        df = df.withColumn("label", when(col("label") < 3, col('label')+1))
+    else:
+        df = df.withColumn("label", when(col("label") > 0, col('label')-1))
     df.write.mode("append").option("header", 'true').csv(folder)
     subprocess.run(f'hdfs dfs -rm {path}', shell=True)
     print('done')
 
 
-feeds = [('prediction_SVM', 'svm'), ('prediction_DecisionTree', 'dt'),
-         ('prediction_Bayes', 'bayes'), ('prediction', 'sensors')]
+#feeds = [('prediction_SVM', 'svm'), ('prediction_DecisionTree', 'dt'),
+#         ('prediction_Bayes', 'bayes'), ('prediction', 'sensors')]
+
+feeds=[ ('prediction', 'sensors')]
 
 FLAG_IRRIGATION = False
 if __name__ == "__main__":
@@ -87,10 +96,10 @@ if __name__ == "__main__":
     previous_train = None
     while True:
 
-        today = dt.now()
-        if today.day == 1 and previous_train != today.strftime("%Y-%m-%d"):
-            previous_train = today.strftime("%Y-%m-%d")
-            retrain_model()
+        # today = dt.now()
+        # if today.day == 1 and previous_train != today.strftime("%Y-%m-%d"):
+        #     previous_train = today.strftime("%Y-%m-%d")
+        #     retrain_model()
 
         spark = SparkSession.builder.master("local").getOrCreate()
         THRESHOLD = get_threshhold()
@@ -110,6 +119,8 @@ if __name__ == "__main__":
                 continue
             df = df.select(['soil'])
             soil = float(df.collect()[0]['soil'])
+            if FLAG_IRRIGATION and (soil -THRESHOLD)>10:
+                change_previous_prediction(spark,False)
             if soil < THRESHOLD:
                 print("Send request irrigation")
                 parameters = {"path": path,
@@ -121,26 +132,26 @@ if __name__ == "__main__":
 
                 # Run code to predict time to irrigation and send time irrigation to motor.
                 # Check result in: https://io.adafruit.com/quangbinh/feeds/sensors.motor
-                #FLAG_IRRIGATION = True
-                # run_checkpoint(uri=".", entry_point="stacking_prediction",
-                #                use_conda=False, parameters=parameters)
+                FLAG_IRRIGATION = True
+                run_checkpoint(uri=".", entry_point="stacking_prediction",
+                               use_conda=False, parameters=parameters)
                 # time.sleep(60)
 
                 print(f"Prediction for {feed_id}")
                 print(f'Current soil: {soil}<{THRESHOLD}')
-                print(f'Uri data prediction: {path}')
-                df = spark.read.csv(path, header=True).orderBy(
-                    "time", ascending=False).limit(1)
-                df = df.select(features)
-                for feature in features:
-                    df = df.withColumn(feature, col(feature).cast(FloatType()))
+                #print(f'Uri data prediction: {path}')
+                # df = spark.read.csv(path, header=True).orderBy(
+                #     "time", ascending=False).limit(1)
+                # df = df.select(features)
+                # for feature in features:
+                #     df = df.withColumn(feature, col(feature).cast(FloatType()))
 
-                result = transform(df)
-                features.append("prediction")
-                df = result.select(features)
-                result = result.collect()[0]
-                run_checkpoint(uri='.', entry_point='send_time_irrigation', use_conda=False, parameters={
-                    'feed_id': feed_id, 'value': int(result[predict_col])})
+                # result = transform(df)
+                # features.append("prediction")
+                # df = result.select(features)
+                # result = result.collect()[0]
+                # run_checkpoint(uri='.', entry_point='send_time_irrigation', use_conda=False, parameters={
+                #     'feed_id': feed_id, 'value': int(result[predict_col])})
             else:
                 FLAG_IRRIGATION = False
                 print(f"No irrgation for {feed_id}!")

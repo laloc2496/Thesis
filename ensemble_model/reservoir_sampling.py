@@ -6,7 +6,7 @@ from xmlrpc.client import Boolean
 import pandas as pd
 import subprocess
 from snakebite.client import Client
-N = 10
+N = 1000
 RETRAIN_PATH = '/user/root/data/retrain/'
 TRAIN_PATH = '/home/binh/Thesis/ensemble_model/data/data_retrain.csv'
 HDFS_SERVER = '10.1.8.7'
@@ -15,13 +15,13 @@ client = Client(HDFS_SERVER, 9000)
 
 def get_retrain_data() -> pd.DataFrame:
     df = list()
-    columns = None
+    columns = ['humidity', 'light', 'temperature', 'soil', 'label']
     for l in client.text(['/user/root/data/retrain/*']):
         if not columns:
             columns = l.decode("utf-8").split('\n')[0].split(',')
         row = l.decode("utf-8").split('\n')[1].split(',')
         row = list(map(float, row))
-        if len(row) == 4:
+        if len(row) == 5:
             df.append(row)
     df = pd.DataFrame(df, columns=columns)
     df_new_data = df.drop_duplicates(subset=columns[:-1], keep='last')
@@ -41,8 +41,10 @@ def reservoir_sampling(df_new_data: pd.DataFrame) -> Boolean:
     #subprocess.run(f'hdfs dfs -rm {RETRAIN_PATH}', shell=True)
     # ------------
     df_retrain.reset_index(drop=True, inplace=True)
-    df_retrain = df_retrain.loc[:, ~df_retrain.columns.str.contains('^Unnamed')]
-    df_retrain = df_retrain.drop_duplicates(subset=df_retrain.columns[:-1], keep='last')
+    df_retrain = df_retrain.loc[:, ~
+                                df_retrain.columns.str.contains('^Unnamed')]
+    df_retrain = df_retrain.drop_duplicates(
+        subset=df_retrain.columns[:-1], keep='last')
     df_retrain.to_csv(TRAIN_PATH)
     return True
 

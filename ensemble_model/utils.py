@@ -93,7 +93,8 @@ def get_predict_col_name(model_name):
 
 def save_model(model, model_name, features, accuracy=None):
     mlflow.set_tracking_uri(TRACKING_URI)
-    mlflow.set_experiment(experiment_name='model')
+    #mlflow.set_experiment(experiment_name='model')
+    mlflow.set_experiment(experiment_name='model_retrain')
     run_id=None
     with mlflow.start_run(run_name=model_name) as run:
         run_id = run.info.run_id
