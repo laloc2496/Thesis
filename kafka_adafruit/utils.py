@@ -48,4 +48,9 @@ def get_account(name) -> Account:
         key="aio_tXfa371mjvnrD0yc6LTWyxNud0oZ",
         group_id='dt'
     )
+    ACCOUNT['voting'] = Account(
+        username="quangbinh1",
+        key="aio_tXfa371mjvnrD0yc6LTWyxNud0oZ",
+        group_id='voting'
+    )
     return ACCOUNT[name]
