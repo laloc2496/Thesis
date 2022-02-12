@@ -1,44 +1,36 @@
-#option 0
-# Penalty:
-# ko lệch: 0
-# lệch <5: -1
-# Lệch 5-10: -2
-# Lệch >10: -3
-
-
 ----------
 2022-01-24
-Model bayes: -502
-Model dt: -534
-Model sensors: -522
-Model svm: -586
+Model bayes: -1506
+Model dt: -1602
+Model sensors: -1566
+Model svm: -1758
 ----------
 2022-01-25
-Model bayes: -416
-Model dt: -354
-Model sensors: -338
-Model svm: -354
+Model bayes: -1248
+Model dt: -1062
+Model sensors: -1014
+Model svm: -1062
 ----------
 2022-01-26
-Model bayes: -339
-Model dt: -250
-Model sensors: -242
-Model svm: -429
+Model bayes: -1017
+Model dt: -750
+Model sensors: -726
+Model svm: -1287
 ----------
 2022-01-27
-Model bayes: -598
-Model dt: -266
-Model sensors: -261
-Model svm: -308
+Model bayes: -1794
+Model dt: -798
+Model sensors: -783
+Model svm: -924
 ----------
 2022-01-28
-Model bayes: -319
-Model dt: -166
-Model sensors: -216
-Model svm: -269
+Model bayes: -957
+Model dt: -648
+Model sensors: -498
+Model svm: -807
 ----------
 2022-01-29
-Model bayes: -409
-Model dt: -213
-Model sensors: -190
-Model svm: -404
+Model bayes: -1227
+Model dt: -639
+Model sensors: -570
+Model svm: -1212

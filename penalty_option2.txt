@@ -1,36 +1,40 @@
+li do sensors nay diem thap hon cai sensors nghiem ngat la do. sensors co vài điểm tưới quá nhiều nên bị trừ điểm
+
+day la option tuoi ngây thơ đơn giản nhất. nen ko can nuoc nghiem ngat thi có the su dung mo hinh don le
+
 ----------
 2022-01-24
-Model bayes: -351
-Model dt: -396
-Model sensors: -359
-Model svm: -416
+Model bayes: -1053
+Model dt: -1188
+Model sensors: -1077
+Model svm: -1248
 ----------
 2022-01-25
-Model bayes: -273
-Model dt: -236
-Model sensors: -231
-Model svm: -249
+Model bayes: -819
+Model dt: -708
+Model sensors: -693
+Model svm: -747
 ----------
 2022-01-26
-Model bayes: -195
-Model dt: -113
-Model sensors: -128
-Model svm: -186
+Model bayes: -585
+Model dt: -339
+Model sensors: -384
+Model svm: -558
 ----------
 2022-01-27
-Model bayes: -517
-Model dt: -161
-Model sensors: -148
-Model svm: -238
+Model bayes: -1551
+Model dt: -483
+Model sensors: -444
+Model svm: -714
 ----------
 2022-01-28
-Model bayes: -175
-Model dt: -93
-Model sensors: -111
-Model svm: -137
+Model bayes: -525
+Model dt: -333
+Model sensors: -279
+Model svm: -411
 ----------
 2022-01-29
-Model bayes: -305
-Model dt: -111
-Model sensors: -114
-Model svm: -248
+Model bayes: -915
+Model dt: -333
+Model sensors: -342
+Model svm: -744

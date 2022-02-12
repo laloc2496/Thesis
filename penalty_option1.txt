@@ -1,36 +1,36 @@
 ----------
 2022-01-24
-Model bayes: -424
-Model dt: -460
-Model sensors: -438
-Model svm: -499
+Model bayes: -1272
+Model dt: -1380
+Model sensors: -1314
+Model svm: -1497
 ----------
 2022-01-25
-Model bayes: -342
-Model dt: -287
-Model sensors: -275
-Model svm: -282
+Model bayes: -1026
+Model dt: -861
+Model sensors: -825
+Model svm: -846
 ----------
 2022-01-26
-Model bayes: -220
-Model dt: -157
-Model sensors: -151
-Model svm: -271
+Model bayes: -660
+Model dt: -471
+Model sensors: -453
+Model svm: -813
 ----------
 2022-01-27
-Model bayes: -547
-Model dt: -192
-Model sensors: -179
-Model svm: -247
+Model bayes: -1641
+Model dt: -576
+Model sensors: -537
+Model svm: -741
 ----------
 2022-01-28
-Model bayes: -203
-Model dt: -111
-Model sensors: -133
-Model svm: -170
+Model bayes: -609
+Model dt: -399
+Model sensors: -333
+Model svm: -510
 ----------
 2022-01-29
-Model bayes: -328
-Model dt: -130
-Model sensors: -122
-Model svm: -294
+Model bayes: -984
+Model dt: -390
+Model sensors: -366
+Model svm: -882
