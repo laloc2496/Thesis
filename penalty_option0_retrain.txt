@@ -1,0 +1,20 @@
+----------
+2022-01-31
+Model sensors: -489
+Model voting: -447
+----------
+2022-02-01
+Model sensors: -792
+Model voting: -1656
+----------
+2022-02-02
+Model sensors: -399
+Model voting: -357
+----------
+2022-02-03
+Model sensors: -1359
+Model voting: -984
+----------
+2022-02-04
+Model sensors: -1683
+Model voting: -1137
