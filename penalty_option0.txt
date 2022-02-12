@@ -1,0 +1,44 @@
+#option 0
+# Penalty:
+# ko lệch: 0
+# lệch <5: -1
+# Lệch 5-10: -2
+# Lệch >10: -3
+
+
+----------
+2022-01-24
+Model bayes: -502
+Model dt: -534
+Model sensors: -522
+Model svm: -586
+----------
+2022-01-25
+Model bayes: -416
+Model dt: -354
+Model sensors: -338
+Model svm: -354
+----------
+2022-01-26
+Model bayes: -339
+Model dt: -250
+Model sensors: -242
+Model svm: -429
+----------
+2022-01-27
+Model bayes: -598
+Model dt: -266
+Model sensors: -261
+Model svm: -308
+----------
+2022-01-28
+Model bayes: -319
+Model dt: -166
+Model sensors: -216
+Model svm: -269
+----------
+2022-01-29
+Model bayes: -409
+Model dt: -213
+Model sensors: -190
+Model svm: -404
